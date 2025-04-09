@@ -1,10 +1,15 @@
 import { spawn } from 'child_process'
-import { join } from 'path'
+import { join, dirname } from 'path'
 import { readdir } from 'fs/promises'
 
 function reporter(r) {
   return ['--test-reporter', r, '--test-reporter-destination', 'stdout']
 }
+
+const thisFile = import.meta.url.replace('file://', '')
+const scriptDir = dirname(thisFile)
+const desktopTrampolineDir = dirname(scriptDir)
+process.chdir(desktopTrampolineDir)
 
 const files = await readdir('test', { recursive: true }).then(x =>
   x.filter(f => f.endsWith('-test.ts')).map(f => join('test', f))
