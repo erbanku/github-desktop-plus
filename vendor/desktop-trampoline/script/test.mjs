@@ -6,8 +6,9 @@ function reporter(r) {
   return ['--test-reporter', r, '--test-reporter-destination', 'stdout']
 }
 
-const thisFile = import.meta.url.replace('file://', '')
-if (!thisFile.endsWith('desktop-trampoline')) {
+console.log('cwd is', process.cwd())
+if (!process.cwd().endsWith('desktop-trampoline')) {
+  const thisFile = import.meta.url.replace('file://', '')
   const scriptDir = dirname(thisFile)
   const desktopTrampolineDir = dirname(scriptDir)
   process.chdir(desktopTrampolineDir)
