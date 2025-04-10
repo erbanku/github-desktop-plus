@@ -26,8 +26,16 @@ jobs:
           repository: ${{ inputs.repository || github.repository }}
           ref: ${{ inputs.ref }}
           submodules: recursive
-      - name: Package and test application in container
-        uses: shiftkey/desktop-ubuntu-arm64-packaging@9be09c4b945873e6509baaf690d457aae08cf901
+      - name: Package and test application
+        run: |
+          yarn
+          yarn run postinstall
+          yarn build:prod
+          yarn run package
+
+          yarn test:setup
+          yarn test:unit
+          yarn test:script
       - name: Upload output artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -48,8 +56,16 @@ jobs:
           repository: ${{ inputs.repository || github.repository }}
           ref: ${{ inputs.ref }}
           submodules: recursive
-      - name: Package and test application in container
-        uses: shiftkey/desktop-ubuntu-arm-packaging@dd75ebc57f69fdb9319ab2b0fe11b253bb1ff2a4
+      - name: Package and test application
+        run: |
+          yarn
+          yarn run postinstall
+          yarn build:prod
+          yarn run package
+
+          yarn test:setup
+          yarn test:unit
+          yarn test:script
       - name: Upload output artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -70,8 +86,16 @@ jobs:
           repository: ${{ inputs.repository || github.repository }}
           ref: ${{ inputs.ref }}
           submodules: recursive
-      - name: Package and test application in container
-        uses: shiftkey/desktop-ubuntu-amd64-packaging@ea7b7a6a940a6b907b160b946439c5c7a516f9f1
+      - name: Package and test application
+        run: |
+          yarn
+          yarn run postinstall
+          yarn build:prod
+          yarn run package
+
+          yarn test:setup
+          yarn test:unit
+          yarn test:script
       - name: Upload output artifacts
         uses: actions/upload-artifact@v4
         with:
