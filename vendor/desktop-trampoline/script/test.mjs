@@ -7,6 +7,7 @@ function reporter(r) {
 }
 
 const thisFile = import.meta.url.replace('file://', '')
+console.log('THIS FILE:', thisFile)
 if (!thisFile.endsWith('desktop-trampoline')) {
   const scriptDir = dirname(thisFile)
   const desktopTrampolineDir = dirname(scriptDir)
