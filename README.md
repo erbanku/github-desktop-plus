@@ -109,6 +109,13 @@ After installing the dependencies with `yarn`, make sure you have Docker install
 yarn test:docker
 ```
 
+To test building the app on linux, run:
+
+```bash
+docker build https://github.com/pol-rivero/desktop-ubuntu-amd64-packaging.git --tag build-ubuntu
+docker run -v "$(pwd):/github/workspace" -w /github/workspace build-ubuntu:latest
+```
+
 ## Why this fork?
 
 While the "official" Linux fork of GitHub Desktop is great, I think it's slow in terms of updates and lacks some advanced features that I'd like. This fork has low code quality requirements compared to the official fork, so I (and hopefully you as well) can add features and improvements quickly.
