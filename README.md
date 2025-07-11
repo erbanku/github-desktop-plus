@@ -1,3 +1,9 @@
+# `act` testing:
+
+```sh
+rm -rf .artifacts; clear; act push --artifact-server-path $PWD/.artifacts
+```
+
 # GitHub Desktop Plus
 
 This is a fork of [GitHub Desktop](https://desktop.github.com) for Linux with additional features and improvements.
