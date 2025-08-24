@@ -43,15 +43,20 @@ sha256sums_x86_64=('[[X86_64_SHA256]]')
 sha256sums_aarch64=('[[AARCH64_SHA256]]')
 sha256sums_armv7h=('[[ARMV7H_SHA256]]')
 package() {
-    tar --zstd -xf data.tar.zst -C "${pkgdir}"
-    install -d "${pkgdir}/opt/${_pkgname}"
+    INSTALL_DIR="$pkgdir/opt/${_pkgname}"
 
-    mv "${pkgdir}/usr/lib/github-desktop-plus/"* "${pkgdir}/opt/${_pkgname}/"
-    rmdir "${pkgdir}/usr/lib/github-desktop-plus"
-    rmdir "${pkgdir}/usr/lib"
+    tar --zstd -xf data.tar.zst -C "$pkgdir"
+    install -d "$INSTALL_DIR"
 
-    rm "${pkgdir}/usr/share/applications/github-desktop-plus.desktop"
-    install -Dm644 "${_pkgname}.desktop" "${pkgdir}/usr/share/applications/${_pkgname}.desktop"
+    mv "$pkgdir/usr/lib/github-desktop-plus/"* "$INSTALL_DIR/"
+    rmdir "$pkgdir/usr/lib/github-desktop-plus"
+    rmdir "$pkgdir/usr/lib"
+
+    rm "$pkgdir/usr/share/applications/github-desktop-plus.desktop"
+    install -Dm644 "${_pkgname}.desktop" "$pkgdir/usr/share/applications/${_pkgname}.desktop"
 
     install -Dm755 "$srcdir/launch-app.sh" "$pkgdir/usr/bin/${_pkgname}"
+
+    chmod +x "$INSTALL_DIR/resources/app/static/github"
+    ln -s "$INSTALL_DIR/resources/app/static/github" "$pkgdir/usr/bin/github-desktop-plus-cli"
 }
