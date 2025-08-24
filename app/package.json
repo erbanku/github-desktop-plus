@@ -1,7 +1,7 @@
 {
   "name": "github-desktop-plus",
   "desktopName": "github-desktop-plus",
-  "productName": "GitHub Desktop",
+  "productName": "GitHub Desktop Plus",
   "bundleID": "com.github.GitHubClient",
   "companyName": "GitHub, Inc.",
   "version": "3.5.3-beta1",

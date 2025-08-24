@@ -54,7 +54,7 @@ const options: DebianOptions = {
   arch: getArchitecture(),
   description: 'Simple collaboration from your desktop',
   productDescription:
-    'This is the unofficial port of GitHub Desktop for Linux distributions',
+    'GitHub Desktop fork with advanced functionality and Bitbucket integration.',
   section: 'GNOME;GTK;Development',
   priority: 'extra',
   homepage: 'https://github.com/pol-rivero/github-desktop-plus',
