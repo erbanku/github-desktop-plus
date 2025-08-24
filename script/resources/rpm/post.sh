@@ -2,12 +2,13 @@
 
 INSTALL_DIR="/usr/lib/github-desktop-plus"
 CLI_DIR="$INSTALL_DIR/resources/app/static"
+CLI_INSTALL_TARGET="/usr/bin/github-desktop-plus-cli"
 
 # add executable permissions for CLI interface
 chmod +x "$CLI_DIR"/github || :
 
 # create symbolic links to /usr/bin directory
-ln -f -s "$CLI_DIR"/github /usr/bin || :
+ln -f -s "$CLI_DIR"/github "$CLI_INSTALL_TARGET" || :
 
 # https://github.com/shiftkey/desktop/issues/21
 if [ ! -f /usr/lib64/libcurl-gnutls.so.4 ]; then
