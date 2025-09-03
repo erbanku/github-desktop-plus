@@ -19,14 +19,7 @@
       <li>Red color for destructive action buttons.</li>
       <li>Add icons to some similar-looking buttons for faster visual recognition.</li>
       <li>Allow generating branch name presets by calling an external script (e.g. fetching ticket numbers from an issue tracker).</li>
-      <li>Bitbucket integration:
-        <ul>
-          <li>Preview and create pull requests.</li>
-          <li>View pull requests status, including checks.</li>
-          <li>Display a commit or PR in Bitbucket (web browser).</li>
-          <li>Correctly set repository owner (instead of displaying "Other").</li>
-        </ul>
-      </li>
+      <li>Bitbucket integration: preview and create pull requests, view pull requests status (including checks), display a commit or PR in Bitbucket (web browser), andcorrectly set repository owner (instead of displaying "Other").</li>
     </ul>
     <p>Repositories list:</p>
     <ul>
