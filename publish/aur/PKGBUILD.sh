@@ -83,7 +83,7 @@ package() {
     install -Dm755 "$srcdir/launch-app.sh" "$pkgdir/usr/bin/$pkgname"
 
     chmod +x "$INSTALL_DIR/resources/app/static/github"
-    ln -s "$INSTALL_DIR/resources/app/static/github" "$pkgdir/usr/bin/github-desktop-plus-cli"
+    ln -s "/opt/$pkgname/resources/app/static/github" "$pkgdir/usr/bin/github-desktop-plus-cli"
 
     install -Dm0644 "$srcdir/$pkgname.desktop" "$pkgdir/usr/share/applications/$pkgname.desktop"
 }
