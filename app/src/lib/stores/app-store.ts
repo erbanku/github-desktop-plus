@@ -2689,15 +2689,22 @@ export class AppStore extends TypedBaseStore<IAppState> {
       useCustomShell,
       selectedShell,
       selectedRepository,
-      useCustomEditor,
-      selectedExternalEditor,
       askForConfirmationOnRepositoryRemoval,
       askForConfirmationOnForcePush,
     } = this
 
+    const isRepository = selectedRepository instanceof Repository
     const isGitHub =
-      selectedRepository instanceof Repository &&
-      isRepositoryWithGitHubRepository(selectedRepository)
+      isRepository && isRepositoryWithGitHubRepository(selectedRepository)
+    const hasEditorOverride =
+      isRepository && selectedRepository.customEditorOverride !== null
+
+    const useCustomEditor = hasEditorOverride
+      ? selectedRepository.customEditorOverride.useCustomEditor
+      : this.useCustomEditor
+    const selectedExternalEditor = hasEditorOverride
+      ? selectedRepository.customEditorOverride.selectedExternalEditor
+      : this.selectedExternalEditor
 
     const labels: MenuLabelsEvent = {
       selectedShell: useCustomShell ? null : selectedShell,
