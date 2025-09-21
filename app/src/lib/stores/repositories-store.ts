@@ -164,6 +164,7 @@ export class RepositoriesStore extends TypedBaseStore<
       repo.alias,
       repo.defaultBranch,
       repo.workflowPreferences,
+      repo.customEditorOverride,
       repo.isTutorialRepository
     )
   }
@@ -302,6 +303,7 @@ export class RepositoriesStore extends TypedBaseStore<
       repository.alias,
       repository.defaultBranch,
       repository.workflowPreferences,
+      repository.customEditorOverride,
       repository.isTutorialRepository
     )
   }
@@ -343,6 +345,7 @@ export class RepositoriesStore extends TypedBaseStore<
       repository.alias,
       defaultBranch,
       repository.workflowPreferences,
+      repository.customEditorOverride,
       repository.isTutorialRepository
     )
   }
@@ -379,6 +382,7 @@ export class RepositoriesStore extends TypedBaseStore<
       repository.alias,
       repository.defaultBranch,
       repository.workflowPreferences,
+      repository.customEditorOverride,
       repository.isTutorialRepository
     )
   }
@@ -526,6 +530,7 @@ export class RepositoriesStore extends TypedBaseStore<
       repo.alias,
       repo.defaultBranch,
       repo.workflowPreferences,
+      repo.customEditorOverride,
       repo.isTutorialRepository
     )
 

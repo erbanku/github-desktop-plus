@@ -6073,13 +6073,35 @@ export class AppStore extends TypedBaseStore<IAppState> {
     repository: Repository | null,
     fullPath: string
   ): Promise<void> {
-    const { selectedExternalEditor, useCustomEditor, customEditor } =
-      this.getState()
+    if (repository?.customEditorOverride) {
+      const { selectedExternalEditor, useCustomEditor, customEditor } =
+        repository?.customEditorOverride
+      return this._openInExternalEditorImpl(
+        selectedExternalEditor,
+        useCustomEditor,
+        customEditor,
+        fullPath
+      )
+    } else {
+      const { selectedExternalEditor, useCustomEditor, customEditor } =
+        this.getState()
+      return this._openInExternalEditorImpl(
+        selectedExternalEditor,
+        useCustomEditor,
+        customEditor,
+        fullPath
+      )
+    }
+  }
 
+  public async _openInExternalEditorImpl(
+    selectedExternalEditor: string | null,
+    useCustomEditor: boolean,
+    customEditor: ICustomIntegration | null,
+    fullPath: string
+  ): Promise<void> {
     try {
-      if (repository?.customEditorOverride) {
-        // Launch the custom editor override if one exists
-      } else if (useCustomEditor && customEditor) {
+      if (useCustomEditor && customEditor) {
         await launchCustomExternalEditor(fullPath, customEditor)
       } else {
         const match = await findEditorOrDefault(selectedExternalEditor)

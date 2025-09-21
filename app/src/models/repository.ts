@@ -11,6 +11,7 @@ import { createEqualityHash } from './equality-hash'
 import { getRemotes } from '../lib/git'
 import { findDefaultRemote } from '../lib/stores/helpers/find-default-remote'
 import { isTrustedRemoteHost } from '../lib/api'
+import { EditorOverride } from './editor-override'
 
 function getBaseName(path: string): string {
   const baseName = Path.basename(path)
@@ -62,6 +63,7 @@ export class Repository {
     public readonly alias: string | null = null,
     public readonly defaultBranch: string | null = null,
     public readonly workflowPreferences: WorkflowPreferences = {},
+    public readonly customEditorOverride: EditorOverride | null = null,
     /**
      * True if the repository is a tutorial repository created as part of the
      * onboarding flow. Tutorial repositories trigger a tutorial user experience

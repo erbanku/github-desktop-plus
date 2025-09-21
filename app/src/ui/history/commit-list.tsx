@@ -442,7 +442,7 @@ export class CommitList extends React.Component<
     ) {
       const relativePath = files[0].path
       const absPath = Path.join(this.props.repository.path, relativePath)
-      this.props.dispatcher.openInExternalEditor(absPath)
+      this.props.dispatcher.openInExternalEditor(this.props.repository, absPath)
     }
   }
 
