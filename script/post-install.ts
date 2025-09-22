@@ -2,6 +2,7 @@
 /* eslint-disable no-sync */
 
 import * as Path from 'path'
+import * as Fs from 'fs'
 import { spawnSync, SpawnSyncOptions } from 'child_process'
 
 import glob from 'glob'
@@ -85,3 +86,24 @@ findYarnVersion(path => {
     }
   }
 })
+
+if (process.env.FLATPAK_ID) {
+  console.log('Making flatpak-specific adjustments…')
+
+  const indexHtml = Path.join(root, 'app', 'static', 'index.html')
+
+  if (!Fs.existsSync(indexHtml)) {
+    throw new Error(`Index file not found: ${indexHtml}`)
+  }
+  try {
+    const indexHtmlContents = Fs.readFileSync(indexHtml, 'utf8')
+    const updatedIndexHtmlContents = indexHtmlContents.replace(
+      'GitHub Desktop Plus',
+      'Desktop Plus'
+    )
+    Fs.writeFileSync(indexHtml, updatedIndexHtmlContents, 'utf8')
+    console.log('Successfully updated branding in index.html')
+  } catch (error) {
+    throw new Error(`Failed to update index.html for Flatpak build: ${error}`)
+  }
+}

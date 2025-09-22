@@ -2,7 +2,7 @@
 <component type="desktop-application">
   <id>io.github.pol_rivero.github-desktop-plus</id>
   <name>Desktop Plus</name>
-  <summary>GitHub Desktop fork with advanced functionality and Bitbucket integration</summary>
+  <summary>Git client with advanced functionality and Bitbucket integration</summary>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MIT</project_license>
   <developer id="io.github.pol_rivero">
@@ -10,9 +10,7 @@
   </developer>
   <description>
     <p>
-      This is a fork of shiftkey's GitHub Desktop port. In addition to being frequently updated
-      with the official upstream (desktop/desktop), it has many quality of life improvements and
-      advanced features for power users.
+      This is an up-to-date fork of GitHub Desktop, with many quality of life improvements and advanced features for power users.
     </p>
     <p>General:</p>
     <ul>
