@@ -220,16 +220,16 @@ export class RepositorySettings extends React.Component<
               <Octicon className="icon" symbol={octicons.gitCommit} />
               {__DARWIN__ ? 'Git Config' : 'Git config'}
             </span>
+            <span>
+              <Octicon className="icon" symbol={octicons.person} />
+              Integrations
+            </span>
             {showForkSettings && (
               <span>
                 <Octicon className="icon" symbol={octicons.repoForked} />
                 {__DARWIN__ ? 'Fork Behavior' : 'Fork behavior'}
               </span>
             )}
-            <span>
-              <Octicon className="icon" symbol={octicons.person} />
-              Integrations
-            </span>
           </TabBar>
 
           <div className="active-tab">{this.renderActiveTab()}</div>
