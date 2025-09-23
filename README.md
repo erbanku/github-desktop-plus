@@ -42,7 +42,10 @@ This is an up-to-date fork of [GitHub Desktop](https://desktop.github.com) for L
 
 ## Download and Installation
 
-### Arch Linux / Manjaro
+### Arch Linux / Manjaro (AUR)
+
+<details>
+<summary>Click to expand</summary>
 
 Simply install `github-desktop-plus-bin` from the AUR.
 
@@ -50,8 +53,13 @@ You can also build from source by installing `github-desktop-plus` or `github-de
 
 > `gnome-keyring` is required and the daemon must be launched either at login or when the X server / Wayland compositor is started. Normally this is handled by a display manager, but in other cases following the instructions found on the [Arch Wiki](https://wiki.archlinux.org/index.php/GNOME/Keyring#Using_the_keyring_outside_GNOME) will fix the issue of not being able to save login credentials.
 
+</details>
 
-### Debian / Ubuntu
+### Debian / Ubuntu (APT)
+
+<details>
+
+<summary>Click to expand</summary>
 
 Create the repository file:
 
@@ -66,8 +74,13 @@ sudo apt update
 sudo apt install github-desktop-plus
 ```
 
+</details>
 
-### Fedora / RHEL / CentOS
+
+### Fedora / RHEL / CentOS (RPM)
+
+<details>
+<summary>Click to expand</summary>
 
 Create the repository file:
 
@@ -83,17 +96,44 @@ sudo dnf check-update
 sudo dnf install github-desktop-plus
 ```
 
-### Other linux distros
+</details>
 
-Download correct binary from the [releases page](https://github.com/pol-rivero/github-desktop-plus/releases/latest) and copy it to a directory in your `PATH`.
 
-| | **64-bit x86** | **64-bit ARM** | **32-bit ARM** |
-| --- | --- | --- | --- |
-| **Debian/Ubuntu** | `-linux-x86_64.deb` | `-linux-arm64.deb` | `-linux-armvhf.deb` |
-| **Fedora/RHEL** | `-linux-x86_64.rpm` | `-linux-arm64.rpm` | `-linux-armv7l.rpm` |
-| **AppImage (Universal)** | `-linux-x86_64.AppImage` | `-linux-arm64.AppImage` | `-linux-armv7l.AppImage` |
+### Flatpak (any distro)
+
+<details>
+<summary>Click to expand</summary>
+
+You can install GitHub Desktop Plus from Flathub by following the instructions at https://flathub.org/en/apps/io.github.pol_rivero.github-desktop-plus or by running the following command:
+
+```bash
+flatpak install flathub io.github.pol_rivero.github-desktop-plus
+```
+
+</details>
+
+### AppImage (any distro)
+
+<details>
+<summary>Click to expand</summary>
+
+Download the AppImage from the [releases page](https://github.com/pol-rivero/github-desktop-plus/releases/latest) and make it executable:
+
+```bash
+chmod +x GitHub-Desktop-Plus-*-linux-*.AppImage
+# Just double-click the file to run it
+```
+
+| **64-bit x86** | **64-bit ARM** | **32-bit ARM** |
+| --- | --- | --- |
+| `-linux-x86_64.AppImage` | `-linux-arm64.AppImage` | `-linux-armv7l.AppImage` |
+
+</details>
 
 ### Windows
+
+<details>
+<summary>Click to expand</summary>
 
 Download and execute the installer from the [releases page](https://github.com/pol-rivero/github-desktop-plus/releases/latest).
 
@@ -102,13 +142,20 @@ Download and execute the installer from the [releases page](https://github.com/p
 | **.EXE Installer** | `-win-x64.exe` | `-win-arm64.exe` |
 | **.MSI Installer** | `-win-x64.msi` | `-win-arm64.msi` |
 
+</details>
+
 ### macOS
+
+<details>
+<summary>Click to expand</summary>
 
 Download the ZIP file from the [releases page](https://github.com/pol-rivero/github-desktop-plus/releases/latest) and extract it. To run the installer, execute the file `GitHub Desktop Plus.app/Contents/MacOS/GitHub Desktop`.
 
 | **64-bit x86** | **64-bit ARM (Apple Silicon)** |
 | --- | --- |
 | `-macOS-x64.zip` | `-macOS-arm64.zip` |
+
+</details>
 
 ## Running the app locally
 
