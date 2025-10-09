@@ -1,13 +1,14 @@
 {
-  "name": "github-desktop",
-  "productName": "GitHub Desktop",
+  "name": "github-desktop-plus",
+  "desktopName": "github-desktop-plus",
+  "productName": "GitHub Desktop Plus",
   "bundleID": "com.github.GitHubClient",
   "companyName": "GitHub, Inc.",
-  "version": "3.5.2",
+  "version": "3.5.3-beta4",
   "main": "./main.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/desktop/desktop.git"
+    "url": "https://github.com/pol-rivero/github-desktop-plus.git"
   },
   "description": "Simple collaboration from your desktop",
   "author": {

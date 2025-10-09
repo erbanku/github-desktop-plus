@@ -136,7 +136,7 @@ export class GitError extends Error {
     let message
 
     if (result.gitErrorDescription) {
-      message = result.gitErrorDescription
+      message = `${result.path}: ${result.gitErrorDescription}`
       rawMessage = false
     } else if (terminalOutput.length > 0) {
       message = terminalOutput

@@ -6,7 +6,11 @@ rm -rf .artifacts; clear; act push --artifact-server-path $PWD/.artifacts
 
 # GitHub Desktop Plus
 
-This is a fork of [GitHub Desktop](https://desktop.github.com) for Linux with additional features and improvements.
+This is an up-to-date fork of [GitHub Desktop](https://desktop.github.com) for Linux with additional features and improvements.
+
+<img src="docs/assets/github-desktop-plus-demo.webp" alt="Demo" style="max-width:1000px;">
+
+![Search commits](docs/assets/github-desktop-plus-demo-search.webp)
 
 ## Extra Features 
 
@@ -15,6 +19,7 @@ This is a fork of [GitHub Desktop](https://desktop.github.com) for Linux with ad
 - Red color for destructive action buttons.
 - Add **icons** to some similar-looking buttons for faster visual recognition.
 - Allow generating **branch name presets** by calling an external script (e.g. fetching ticket numbers from an issue tracker). [Click here for more details](docs/branch-name-presets.md).
+- Allow using a **different text editor for a given repo**, by overriding it in the repository settings.
 - **Bitbucket** integration:
   - Preview and create pull requests.
   - View pull requests status, including checks.
@@ -43,51 +48,98 @@ This is a fork of [GitHub Desktop](https://desktop.github.com) for Linux with ad
 
 ## Download and Installation
 
-### Arch Linux / Manjaro
+### Arch Linux / Manjaro (AUR)
+
+<details>
+<summary>Click to expand</summary>
 
 Simply install `github-desktop-plus-bin` from the AUR.
 
-### Debian / Ubuntu
+You can also build from source by installing `github-desktop-plus` or `github-desktop-plus-git` from the AUR.
+
+> `gnome-keyring` is required and the daemon must be launched either at login or when the X server / Wayland compositor is started. Normally this is handled by a display manager, but in other cases following the instructions found on the [Arch Wiki](https://wiki.archlinux.org/index.php/GNOME/Keyring#Using_the_keyring_outside_GNOME) will fix the issue of not being able to save login credentials.
+
+</details>
+
+### Debian / Ubuntu (APT)
+
+<details>
+
+<summary>Click to expand</summary>
 
 Create the repository file:
 
 ```bash
-echo "deb [trusted=yes] https://deb.github-desktop.polrivero.com/ stable main" | sudo tee /etc/apt/sources.list.d/github-desktop-plus.list
+curl https://gpg.polrivero.com/public.key | sudo gpg --dearmor -o /usr/share/keyrings/polrivero.gpg
+echo "deb [signed-by=/usr/share/keyrings/polrivero.gpg] https://deb.github-desktop.polrivero.com/ stable main" | sudo tee /etc/apt/sources.list.d/github-desktop-plus.list
 ```
 
 Update the package list and install:
 ```bash
 sudo apt update
-sudo apt install github-desktop
+sudo apt install github-desktop-plus
 ```
 
+</details>
 
-### Fedora / RHEL / CentOS
+
+### Fedora / RHEL / CentOS (RPM)
+
+<details>
+<summary>Click to expand</summary>
 
 Create the repository file:
 
 ```bash
-echo -e "[github-desktop-plus]\nname=GitHub Desktop Plus\nbaseurl=https://rpm.github-desktop.polrivero.com/\nenabled=1\ngpgcheck=0" | sudo tee /etc/yum.repos.d/github-desktop-plus.repo
+sudo rpm --import https://gpg.polrivero.com/public.key
+echo -e "[github-desktop-plus]\nname=GitHub Desktop Plus\nbaseurl=https://rpm.github-desktop.polrivero.com/\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=https://gpg.polrivero.com/public.key" | sudo tee /etc/yum.repos.d/github-desktop-plus.repo
 ```
 
 Update the package list and install:
 
 ```bash
 sudo dnf check-update
-sudo dnf install github-desktop
+sudo dnf install github-desktop-plus
 ```
 
-### Other linux distros
+</details>
 
-Download correct binary from the [releases page](https://github.com/pol-rivero/github-desktop-plus/releases/latest) and copy it to a directory in your `PATH`.
 
-| | **64-bit x86** | **64-bit ARM** | **32-bit ARM** |
-| --- | --- | --- | --- |
-| **Debian/Ubuntu** | `-linux-x86_64.deb` | `-linux-arm64.deb` | `-linux-armvhf.deb` |
-| **Fedora/RHEL** | `-linux-x86_64.rpm` | `-linux-arm64.rpm` | `-linux-armv7l.rpm` |
-| **AppImage (Universal)** | `-linux-x86_64.AppImage` | `-linux-arm64.AppImage` | `-linux-armv7l.AppImage` |
+### Flatpak (any distro)
 
-### Windows:
+<details>
+<summary>Click to expand</summary>
+
+You can install GitHub Desktop Plus from Flathub by following the instructions at https://flathub.org/en/apps/io.github.pol_rivero.github-desktop-plus or by running the following command:
+
+```bash
+flatpak install flathub io.github.pol_rivero.github-desktop-plus
+```
+
+</details>
+
+### AppImage (any distro)
+
+<details>
+<summary>Click to expand</summary>
+
+Download the AppImage from the [releases page](https://github.com/pol-rivero/github-desktop-plus/releases/latest) and make it executable:
+
+```bash
+chmod +x GitHub-Desktop-Plus-*-linux-*.AppImage
+# Just double-click the file to run it
+```
+
+| **64-bit x86** | **64-bit ARM** | **32-bit ARM** |
+| --- | --- | --- |
+| `-linux-x86_64.AppImage` | `-linux-arm64.AppImage` | `-linux-armv7l.AppImage` |
+
+</details>
+
+### Windows
+
+<details>
+<summary>Click to expand</summary>
 
 Download and execute the installer from the [releases page](https://github.com/pol-rivero/github-desktop-plus/releases/latest).
 
@@ -96,13 +148,20 @@ Download and execute the installer from the [releases page](https://github.com/p
 | **.EXE Installer** | `-win-x64.exe` | `-win-arm64.exe` |
 | **.MSI Installer** | `-win-x64.msi` | `-win-arm64.msi` |
 
-### macOS:
+</details>
+
+### macOS
+
+<details>
+<summary>Click to expand</summary>
 
 Download the ZIP file from the [releases page](https://github.com/pol-rivero/github-desktop-plus/releases/latest) and extract it. To run the installer, execute the file `GitHub Desktop Plus.app/Contents/MacOS/GitHub Desktop`.
 
 | **64-bit x86** | **64-bit ARM (Apple Silicon)** |
 | --- | --- |
 | `-macOS-x64.zip` | `-macOS-arm64.zip` |
+
+</details>
 
 ## Running the app locally
 
@@ -147,9 +206,12 @@ yarn test:docker
 
 ## Why this fork?
 
-While the "official" Linux fork of GitHub Desktop is great, I think it's slow in terms of updates and lacks some advanced features that I'd like. This fork has low code quality requirements compared to the official fork, so I (and hopefully you as well) can add features and improvements quickly.
+First of all, because shiftkey's fork is currently unmaintained (last commit was in February 2025), so it's not getting the latest features and fixes from the official GitHub Desktop repository.
 
+Secondly, I think the official GitHub Desktop app is very slow in terms of updates and lacks some advanced features that I'd like. This fork has low code quality requirements compared to the official repo, so I (and hopefully you as well) can add features and improvements quickly.  
 This fork also focuses on integrating nicely with Bitbucket, since I use it for work and haven't found a good Linux GUI client for it.
+
+Keep in mind that this version is not endorsed by GitHub, and it's aimed at power users with technical knowledge. If you're looking for a polished and stable product, I recommend using the official GitHub Desktop app instead.
 
 ---
 
@@ -327,10 +389,6 @@ Invertocat designs that include "logo" in the file title in the following
 folder: [logos](app/static/logos).
 
 GitHub® and its stylized versions and the Invertocat mark are GitHub's
-Trademarks or registered Trademarks. When using GitHub's logos, be sure to
-follow the GitHub [logo guidelines](https://github.com/logos).
-
-</details>
 Trademarks or registered Trademarks. When using GitHub's logos, be sure to
 follow the GitHub [logo guidelines](https://github.com/logos).
 

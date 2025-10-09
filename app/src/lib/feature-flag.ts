@@ -118,3 +118,7 @@ export const enableCommitMessageGeneration = (account: Account) => {
     account.isCopilotDesktopEnabled
   )
 }
+
+export function enableAccessibleListToolTips(): boolean {
+  return enableBetaFeatures()
+}

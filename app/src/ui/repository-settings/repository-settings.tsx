@@ -31,6 +31,9 @@ import {
 import { Account } from '../../models/account'
 import { Octicon } from '../octicons'
 import * as octicons from '../octicons/octicons.generated'
+import { Integrations } from './integrations'
+import { ICustomIntegration } from '../../lib/custom-integration'
+import { getAvailableEditors } from '../../lib/editors/lookup'
 
 interface IRepositorySettingsProps {
   readonly initialSelectedTab?: RepositorySettingsTab
@@ -45,6 +48,7 @@ export enum RepositorySettingsTab {
   Remote = 0,
   IgnoredFiles,
   GitConfig,
+  Integrations,
   ForkSettings,
 }
 
@@ -67,6 +71,11 @@ interface IRepositorySettingsState {
   readonly errors?: ReadonlyArray<JSX.Element | string>
   readonly forkContributionTarget: ForkContributionTarget
   readonly isLoadingGitConfig: boolean
+  readonly availableEditors: ReadonlyArray<string>
+  readonly useDefaultEditor: boolean
+  readonly selectedExternalEditor: string | null
+  readonly useCustomEditor: boolean
+  readonly customEditor: ICustomIntegration
 }
 
 export class RepositorySettings extends React.Component<
@@ -95,6 +104,16 @@ export class RepositorySettings extends React.Component<
       initialCommitterName: null,
       initialCommitterEmail: null,
       isLoadingGitConfig: true,
+      availableEditors: [],
+      useDefaultEditor: !props.repository.customEditorOverride,
+      selectedExternalEditor:
+        props.repository.customEditorOverride?.selectedExternalEditor ?? null,
+      useCustomEditor:
+        props.repository.customEditorOverride?.useCustomEditor || false,
+      customEditor: props.repository.customEditorOverride?.customEditor ?? {
+        path: '',
+        arguments: '',
+      },
     }
   }
 
@@ -121,6 +140,9 @@ export class RepositorySettings extends React.Component<
       true
     )
 
+    const editors = await getAvailableEditors()
+    const availableEditors = editors.map(e => e.editor) ?? null
+
     const globalCommitterName = (await getGlobalConfigValue('user.name')) || ''
     const globalCommitterEmail =
       (await getGlobalConfigValue('user.email')) || ''
@@ -142,6 +164,7 @@ export class RepositorySettings extends React.Component<
       gitConfigLocation,
       committerName,
       committerEmail,
+      availableEditors,
       globalCommitterName,
       globalCommitterEmail,
       initialGitConfigLocation: gitConfigLocation,
@@ -196,6 +219,10 @@ export class RepositorySettings extends React.Component<
             <span>
               <Octicon className="icon" symbol={octicons.gitCommit} />
               {__DARWIN__ ? 'Git Config' : 'Git config'}
+            </span>
+            <span>
+              <Octicon className="icon" symbol={octicons.person} />
+              Integrations
             </span>
             {showForkSettings && (
               <span>
@@ -273,6 +300,22 @@ export class RepositorySettings extends React.Component<
             onNameChanged={this.onCommitterNameChanged}
             onEmailChanged={this.onCommitterEmailChanged}
             isLoadingGitConfig={this.state.isLoadingGitConfig}
+          />
+        )
+      }
+
+      case RepositorySettingsTab.Integrations: {
+        return (
+          <Integrations
+            useDefaultEditor={this.state.useDefaultEditor}
+            availableEditors={this.state.availableEditors}
+            selectedExternalEditor={this.state.selectedExternalEditor}
+            useCustomEditor={this.state.useCustomEditor}
+            customEditor={this.state.customEditor}
+            onUseDefaultEditorChanged={this.onUseDefaultEditorChanged}
+            onSelectedEditorChanged={this.onSelectedEditorChanged}
+            onUseCustomEditorChanged={this.onUseCustomEditorChanged}
+            onCustomEditorChanged={this.onCustomEditorChanged}
           />
         )
       }
@@ -403,6 +446,30 @@ export class RepositorySettings extends React.Component<
       this.props.dispatcher.refreshAuthor(this.props.repository)
     }
 
+    if (
+      this.state.useDefaultEditor !==
+        !this.props.repository.customEditorOverride ||
+      this.state.selectedExternalEditor !==
+        this.props.repository.customEditorOverride?.selectedExternalEditor ||
+      this.state.useCustomEditor !==
+        this.props.repository.customEditorOverride.useCustomEditor ||
+      this.state.customEditor.path !==
+        this.props.repository.customEditorOverride.customEditor?.path ||
+      this.state.customEditor.arguments !==
+        this.props.repository.customEditorOverride.customEditor.arguments
+    ) {
+      await this.props.dispatcher.updateRepositoryEditorOverride(
+        this.props.repository,
+        this.state.useDefaultEditor
+          ? null
+          : {
+              selectedExternalEditor: this.state.selectedExternalEditor,
+              useCustomEditor: this.state.useCustomEditor,
+              customEditor: this.state.customEditor,
+            }
+      )
+    }
+
     if (!errors.length) {
       this.props.onDismissed()
     } else {
@@ -460,5 +527,21 @@ export class RepositorySettings extends React.Component<
 
   private onCommitterEmailChanged = (committerEmail: string) => {
     this.setState({ committerEmail })
+  }
+
+  private onUseDefaultEditorChanged = (useDefaultEditor: boolean) => {
+    this.setState({ useDefaultEditor: useDefaultEditor })
+  }
+
+  private onSelectedEditorChanged = (selectedExternalEditor: string) => {
+    this.setState({ selectedExternalEditor })
+  }
+
+  private onUseCustomEditorChanged = (useCustomEditor: boolean) => {
+    this.setState({ useCustomEditor })
+  }
+
+  private onCustomEditorChanged = (customEditor: ICustomIntegration) => {
+    this.setState({ customEditor })
   }
 }

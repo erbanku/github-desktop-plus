@@ -11,6 +11,7 @@ import { createEqualityHash } from './equality-hash'
 import { getRemotes } from '../lib/git'
 import { findDefaultRemote } from '../lib/stores/helpers/find-default-remote'
 import { isTrustedRemoteHost } from '../lib/api'
+import { EditorOverride } from './editor-override'
 
 function getBaseName(path: string): string {
   const baseName = Path.basename(path)
@@ -62,6 +63,7 @@ export class Repository {
     public readonly alias: string | null = null,
     public readonly defaultBranch: string | null = null,
     public readonly workflowPreferences: WorkflowPreferences = {},
+    public readonly customEditorOverride: EditorOverride | null = null,
     /**
      * True if the repository is a tutorial repository created as part of the
      * onboarding flow. Tutorial repositories trigger a tutorial user experience
@@ -79,6 +81,7 @@ export class Repository {
       this.missing,
       this.alias,
       this.defaultBranch,
+      getCustomOverrideHash(this.customEditorOverride),
       this.workflowPreferences.forkContributionTarget,
       this.isTutorialRepository
     )
@@ -288,5 +291,16 @@ export function isForkedRepositoryContributingToParent(
   return (
     isRepositoryWithForkedGitHubRepository(repository) &&
     getForkContributionTarget(repository) === ForkContributionTarget.Parent
+  )
+}
+
+function getCustomOverrideHash(
+  customEditorOverride: EditorOverride | null
+): string {
+  return createEqualityHash(
+    customEditorOverride?.selectedExternalEditor,
+    customEditorOverride?.useCustomEditor,
+    customEditorOverride?.customEditor?.path,
+    customEditorOverride?.customEditor?.arguments
   )
 }

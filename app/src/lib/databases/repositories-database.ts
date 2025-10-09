@@ -3,6 +3,7 @@ import { BaseDatabase } from './base-database'
 import { WorkflowPreferences } from '../../models/workflow-preferences'
 import { assertNonNullable } from '../fatal-error'
 import { GitHubAccountType } from '../api'
+import { EditorOverride } from '../../models/editor-override'
 
 export interface IDatabaseOwner {
   readonly id?: number
@@ -56,6 +57,8 @@ export interface IDatabaseRepository {
 
   /** The last time the stash entries were checked for the repository */
   readonly lastStashCheckDate?: number | null
+
+  readonly customEditorOverride?: EditorOverride | null
 
   readonly workflowPreferences?: WorkflowPreferences
 

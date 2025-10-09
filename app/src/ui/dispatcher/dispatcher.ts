@@ -128,6 +128,7 @@ import { isAbsolute } from 'path'
 import { CLIAction } from '../../lib/cli-action'
 import { IBranchNamePreset } from '../../models/branch-preset'
 import { BypassReasonType } from '../secret-scanning/bypass-push-protection-dialog'
+import { EditorOverride } from '../../models/editor-override'
 
 /**
  * An error handler function.
@@ -861,6 +862,16 @@ export class Dispatcher {
     return this.appStore._updateRepositoryDefaultBranch(repository, branch)
   }
 
+  public updateRepositoryEditorOverride(
+    repository: Repository,
+    customEditorOverride: EditorOverride | null
+  ): Promise<void> {
+    return this.appStore._updateRepositoryEditorOverride(
+      repository,
+      customEditorOverride
+    )
+  }
+
   /** Rename the branch to a new name. */
   public renameBranch(
     repository: Repository,
@@ -1515,8 +1526,11 @@ export class Dispatcher {
   /**
    * Opens a path in the external editor selected by the user.
    */
-  public async openInExternalEditor(fullPath: string): Promise<void> {
-    return this.appStore._openInExternalEditor(fullPath)
+  public async openInExternalEditor(
+    repository: Repository | null,
+    fullPath: string
+  ): Promise<void> {
+    return this.appStore._openInExternalEditor(repository, fullPath)
   }
 
   /**

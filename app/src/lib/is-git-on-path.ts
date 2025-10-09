@@ -30,4 +30,6 @@ export const isGitOnPath = async () =>
   // Modern versions of macOS ship with a Git shim that guides you through
   // the process of setting everything up. We trust this is available, so
   // don't worry about looking for it here.
-  __DARWIN__ || (await findGitOnPath()) !== undefined
+  // Flatpak fails to find git inside its filesystem, even if the host
+  // has it installed. Trust it will be available.
+  __DARWIN__ || __FLATPAK__ || (await findGitOnPath()) !== undefined

@@ -275,12 +275,13 @@ async function handleCommandLineArguments(argv: string[]) {
 
     if (matchingUrl) {
       handleAppURL(matchingUrl)
+      return
     } else if (__WIN32__) {
       log.error(`Encountered --protocol-launcher without app url`)
+      return
     }
     // If --protocol-launcher is present we always want to bail and not
     // risk a smuggled cli switch
-    return
   }
 
   if (typeof args['cli-open'] === 'string') {

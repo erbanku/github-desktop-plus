@@ -52,6 +52,11 @@ if (process.env.NODE_ENV === 'production') {
   const port = getPortOrDefault()
   const message = 'Could not find public path from configuration'
 
+  if (!compiler) {
+    console.error("Couldn't start the webpack compiler.")
+    process.exit(1)
+  }
+
   const devMiddleware = DevMiddleware(compiler, {
     publicPath: u(
       message,

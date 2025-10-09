@@ -6,7 +6,7 @@ const run = (...args: Array<string>) => {
   function cb(e: unknown | null, stderr?: string) {
     if (e) {
       console.error(`Error running command ${args}`)
-      console.error(stderr ?? `${e}`)
+      console.error(stderr || `${e}`)
       process.exit(
         typeof e === 'object' && 'code' in e && typeof e.code === 'number'
           ? e.code
@@ -26,6 +26,8 @@ const run = (...args: Array<string>) => {
       .on('error', cb)
       .on('exit', code => (process.exitCode = code ?? process.exitCode))
       .unref()
+  } else if (process.platform === 'linux') {
+    execFile('/bin/github-desktop-plus', args, cb)
   } else {
     throw new Error('Unsupported platform')
   }
@@ -38,12 +40,12 @@ const args = parse(process.argv.slice(2), {
 
 const usage = (exitCode = 1): never => {
   process.stderr.write(
-    'GitHub Desktop CLI usage: \n' +
-      '  github                            Open the current directory\n' +
-      '  github open [path]                Open the provided path\n' +
-      '  github clone [-b branch] <url>    Clone the repository by url or name/owner\n' +
-      '                                    (ex torvalds/linux), optionally checking out\n' +
-      '                                    the branch\n'
+    'GitHub Desktop Plus CLI usage: \n' +
+      '  github-desktop-plus-cli                           Open the current directory\n' +
+      '  github-desktop-plus-cli open [path]               Open the provided path\n' +
+      '  github-desktop-plus-cli clone [-b branch] <url>   Clone the repository by url or name/owner\n' +
+      '                                                    (ex torvalds/linux), optionally checking\n' +
+      '                                                    out the branch\n'
   )
   process.exit(exitCode)
 }

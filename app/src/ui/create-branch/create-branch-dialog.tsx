@@ -267,6 +267,7 @@ export class CreateBranch extends React.Component<
       preset => ({
         title: preset.description,
         key: preset.name,
+        expandText: true,
       })
     )
 

@@ -359,6 +359,7 @@ import {
 } from '../../models/branch-preset'
 import { BypassReasonType } from '../../ui/secret-scanning/bypass-push-protection-dialog'
 import { getStore } from '../../main-process/settings-store'
+import { EditorOverride } from '../../models/editor-override'
 
 const LastSelectedRepositoryIDKey = 'last-selected-repository-id'
 
@@ -2688,15 +2689,22 @@ export class AppStore extends TypedBaseStore<IAppState> {
       useCustomShell,
       selectedShell,
       selectedRepository,
-      useCustomEditor,
-      selectedExternalEditor,
       askForConfirmationOnRepositoryRemoval,
       askForConfirmationOnForcePush,
     } = this
 
+    const isRepository = selectedRepository instanceof Repository
     const isGitHub =
-      selectedRepository instanceof Repository &&
-      isRepositoryWithGitHubRepository(selectedRepository)
+      isRepository && isRepositoryWithGitHubRepository(selectedRepository)
+    const hasEditorOverride =
+      isRepository && selectedRepository.customEditorOverride !== null
+
+    const useCustomEditor = hasEditorOverride
+      ? selectedRepository.customEditorOverride.useCustomEditor
+      : this.useCustomEditor
+    const selectedExternalEditor = hasEditorOverride
+      ? selectedRepository.customEditorOverride.selectedExternalEditor
+      : this.selectedExternalEditor
 
     const labels: MenuLabelsEvent = {
       selectedShell: useCustomShell ? null : selectedShell,
@@ -4567,6 +4575,16 @@ export class AppStore extends TypedBaseStore<IAppState> {
     await this._refreshRepository(repo)
   }
 
+  public async _updateRepositoryEditorOverride(
+    repository: Repository,
+    customEditorOverride: EditorOverride | null
+  ): Promise<void> {
+    await this.repositoriesStore.updateRepositoryEditorOverride(
+      repository,
+      customEditorOverride
+    )
+  }
+
   /** This shouldn't be called directly. See `Dispatcher`. */
   public async _renameBranch(
     repository: Repository,
@@ -6064,15 +6082,42 @@ export class AppStore extends TypedBaseStore<IAppState> {
 
   public async _editGlobalGitConfig() {
     await getGlobalConfigPath()
-      .then(p => this._openInExternalEditor(p))
+      .then(p => this._openInExternalEditor(null, p))
       .catch(e => log.error('Could not open global Git config for editing', e))
   }
 
   /** Open a path to a repository or file using the user's configured editor */
-  public async _openInExternalEditor(fullPath: string): Promise<void> {
-    const { selectedExternalEditor, useCustomEditor, customEditor } =
-      this.getState()
+  public async _openInExternalEditor(
+    repository: Repository | null,
+    fullPath: string
+  ): Promise<void> {
+    if (repository?.customEditorOverride) {
+      const { selectedExternalEditor, useCustomEditor, customEditor } =
+        repository?.customEditorOverride
+      return this._openInExternalEditorImpl(
+        selectedExternalEditor,
+        useCustomEditor,
+        customEditor,
+        fullPath
+      )
+    } else {
+      const { selectedExternalEditor, useCustomEditor, customEditor } =
+        this.getState()
+      return this._openInExternalEditorImpl(
+        selectedExternalEditor,
+        useCustomEditor,
+        customEditor,
+        fullPath
+      )
+    }
+  }
 
+  public async _openInExternalEditorImpl(
+    selectedExternalEditor: string | null,
+    useCustomEditor: boolean,
+    customEditor: ICustomIntegration | null,
+    fullPath: string
+  ): Promise<void> {
     try {
       if (useCustomEditor && customEditor) {
         await launchCustomExternalEditor(fullPath, customEditor)
@@ -7314,7 +7359,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
     const { workingDirectory } = changesState
     const untrackedFiles = getUntrackedFiles(workingDirectory)
 
-    return createDesktopStashEntry(repository, branch, untrackedFiles)
+    return createDesktopStashEntry(repository, branch, untrackedFiles, true)
   }
 
   private async createStashEntries(
@@ -7344,10 +7389,12 @@ export class AppStore extends TypedBaseStore<IAppState> {
         ) === -1
     )
 
-    return createDesktopStashEntry(repository, branch, [
-      ...files,
-      ...stashPoppedFiles,
-    ])
+    return createDesktopStashEntry(
+      repository,
+      branch,
+      [...files, ...stashPoppedFiles],
+      false
+    )
   }
 
   /** This shouldn't be called directly. See `Dispatcher`. */

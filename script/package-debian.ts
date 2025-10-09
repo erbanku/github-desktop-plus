@@ -54,10 +54,10 @@ const options: DebianOptions = {
   arch: getArchitecture(),
   description: 'Simple collaboration from your desktop',
   productDescription:
-    'This is the unofficial port of GitHub Desktop for Linux distributions',
+    'GitHub Desktop fork with advanced functionality and Bitbucket integration.',
   section: 'GNOME;GTK;Development',
   priority: 'extra',
-  homepage: 'https://github.com/shiftkey/desktop',
+  homepage: 'https://github.com/pol-rivero/github-desktop-plus',
   depends: [
     // Desktop-specific dependencies
     'libcurl3 | libcurl4',
@@ -86,7 +86,7 @@ const options: DebianOptions = {
     // see https://github.com/shiftkey/desktop/issues/72 for more details
     'x-scheme-handler/x-github-desktop-dev-auth',
   ],
-  maintainer: 'Brendan Forster <github@brendanforster.com>',
+  maintainer: 'Pol Rivero <github-desktop-plus@polrivero.com>',
 }
 
 export async function packageDebian(): Promise<string> {
@@ -97,7 +97,7 @@ export async function packageDebian(): Promise<string> {
   const installer = require('electron-installer-debian')
 
   await installer(options)
-  const installersPath = `${distRoot}/github-desktop*.deb`
+  const installersPath = `${distRoot}/github-desktop-plus*.deb`
 
   const files = await globPromise(installersPath)
 

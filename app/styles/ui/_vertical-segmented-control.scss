@@ -42,6 +42,10 @@ fieldset.vertical-segmented-control {
       @include ellipsis;
     }
 
+    .title.expand-text {
+      white-space: normal;
+    }
+
     p {
       color: var(--text-secondary-color);
     }

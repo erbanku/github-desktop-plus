@@ -158,7 +158,13 @@ export class TextBox extends React.Component<ITextBoxProps, ITextBoxState> {
   }
 
   public componentDidUpdate(prevProps: ITextBoxProps) {
-    if (this.inputElement && this.state.cursorPosition) {
+    if (
+      this.inputElement &&
+      this.state.cursorPosition &&
+      ['text', 'search', 'url', 'tel', 'password'].includes(
+        this.inputElement.type
+      )
+    ) {
       const { start, end } = this.state.cursorPosition
       const max = (this.state.value ?? '').length
       const safeStart = Math.min(start, max)

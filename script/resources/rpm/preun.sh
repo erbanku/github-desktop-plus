@@ -1,8 +1,8 @@
 #!/bin/bash
 
-BASE_FILE="/usr/bin/github"
+CLI_BINARY="/usr/bin/github-desktop-plus-cli"
 
 # remove symbolic links in /usr/bin directory
-test -f ${BASE_FILE} && unlink ${BASE_FILE}
+test -f ${CLI_BINARY} && unlink ${CLI_BINARY}
 
 exit 0

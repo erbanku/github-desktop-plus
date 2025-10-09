@@ -1,4 +1,4 @@
-import { spawn, SpawnOptions } from 'child_process'
+import { ChildProcess, spawn, SpawnOptions } from 'child_process'
 import { pathExists } from '../helpers/linux'
 import { ExternalEditorError, FoundEditor } from './shared'
 import {
@@ -31,9 +31,14 @@ async function launchEditor(
       stdio: 'ignore',
     }
 
-    const child = spawnAsDarwinApp
-      ? spawn('open', ['-a', editorPath, ...args], opts)
-      : spawn(editorPath, args, opts)
+    let child: ChildProcess
+    if (__FLATPAK__) {
+      child = spawn('flatpak-spawn', ['--host', editorPath, ...args], opts)
+    } else if (spawnAsDarwinApp) {
+      child = spawn('open', ['-a', editorPath, ...args], opts)
+    } else {
+      child = spawn(editorPath, args, opts)
+    }
 
     child.on('error', reject)
     child.on('spawn', resolve)

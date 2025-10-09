@@ -2249,7 +2249,9 @@ export class App extends React.Component<IAppProps, IAppState> {
             }
             accounts={this.state.accounts}
             cachedRepoRulesets={this.state.cachedRepoRulesets}
-            openFileInExternalEditor={this.openFileInExternalEditor}
+            openFileInExternalEditor={this.getOpenFileInExternalEditorHandler(
+              popup.repository
+            )}
             resolvedExternalEditor={this.state.resolvedExternalEditor}
             openRepositoryInShell={this.openCurrentRepositoryInShell}
           />
@@ -2960,8 +2962,16 @@ export class App extends React.Component<IAppProps, IAppState> {
     this.props.dispatcher.openShell(repository.path)
   }
 
-  private openFileInExternalEditor = (fullPath: string) => {
-    this.props.dispatcher.openInExternalEditor(fullPath)
+  private getOpenFileInExternalEditorHandler(repository: Repository) {
+    return (fullPath: string) =>
+      this.openFileInExternalEditor(repository, fullPath)
+  }
+
+  private openFileInExternalEditor = (
+    repository: Repository,
+    fullPath: string
+  ) => {
+    this.props.dispatcher.openInExternalEditor(repository, fullPath)
   }
 
   private openInExternalEditor = (
@@ -2971,7 +2981,7 @@ export class App extends React.Component<IAppProps, IAppState> {
       return
     }
 
-    this.props.dispatcher.openInExternalEditor(repository.path)
+    this.props.dispatcher.openInExternalEditor(repository, repository.path)
   }
 
   private onOpenInExternalEditor = (path: string) => {
@@ -2981,7 +2991,9 @@ export class App extends React.Component<IAppProps, IAppState> {
     }
 
     const fullPath = Path.join(repository.path, path)
-    this.props.dispatcher.openInExternalEditor(fullPath)
+    const nonCloningRepository =
+      repository instanceof CloningRepository ? null : repository
+    this.props.dispatcher.openInExternalEditor(nonCloningRepository, fullPath)
   }
 
   private showRepository = (repository: Repository | CloningRepository) => {

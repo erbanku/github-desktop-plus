@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import * as React from 'react'
 
 interface ISegmentedItemProps {
@@ -11,6 +12,12 @@ interface ISegmentedItemProps {
    * selecting this item.
    */
   readonly description?: string | JSX.Element
+
+  /**
+   * If true, allows the title text to wrap to multiple lines instead of being
+   * truncated with an ellipsis.
+   */
+  readonly expandText?: boolean
 }
 
 export class SegmentedItem extends React.Component<ISegmentedItemProps> {
@@ -23,9 +30,13 @@ export class SegmentedItem extends React.Component<ISegmentedItemProps> {
   }
 
   public render() {
+    const classes = classNames('title', {
+      'expand-text': this.props.expandText,
+    })
+
     return (
       <>
-        <div className="title">{this.props.title}</div>
+        <div className={classes}>{this.props.title}</div>
         {this.renderDescription()}
       </>
     )

@@ -51,7 +51,7 @@ const options: RedhatOptions = {
   arch: getArchitecture(),
   description: 'Simple collaboration from your desktop',
   productDescription:
-    'This is the unofficial port of GitHub Desktop for Linux distributions',
+    'GitHub Desktop fork with advanced functionality and Bitbucket integration.',
   categories: ['GNOME', 'GTK', 'Development'],
   requires: [
     // dugite-native dependencies
@@ -92,7 +92,7 @@ export async function packageRedhat(): Promise<string> {
   const installer = require('electron-installer-redhat')
 
   await installer(options)
-  const installersPath = `${distRoot}/github-desktop*.rpm`
+  const installersPath = `${distRoot}/github-desktop-plus*.rpm`
 
   const files = await globPromise(installersPath)
 

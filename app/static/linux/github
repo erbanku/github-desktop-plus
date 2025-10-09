@@ -10,14 +10,14 @@ else
 		GITHUB_PATH=$(dirname "$(dirname "$(dirname "$(dirname "$SYMLINK")")")")
 	else
 		# else use the standard install location
-		GITHUB_PATH="/opt/GitHub Desktop"
+		GITHUB_PATH="/opt/GitHub Desktop Plus"
 	fi
 fi
 # check if this is a dev install or standard
-if [ -f "$GITHUB_PATH/github-desktop-dev" ]; then
-	BINARY_NAME="github-desktop-dev"
+if [ -f "$GITHUB_PATH/github-desktop-plus-dev" ]; then
+	BINARY_NAME="github-desktop-plus-dev"
 else
-	BINARY_NAME="github-desktop"
+	BINARY_NAME="github-desktop-plus"
 fi
 
 ELECTRON="$GITHUB_PATH/$BINARY_NAME"

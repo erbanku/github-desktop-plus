@@ -19,6 +19,12 @@ export interface ISegmentedItem<T extends React.Key> {
   readonly description?: string | JSX.Element
 
   /**
+   * If true, allows the title text to wrap to multiple lines instead of being
+   * truncated with an ellipsis.
+   */
+  readonly expandText?: boolean
+
+  /**
    * The key to use for that item. This key will be passed as
    * the first argument of onSelectionChanged() when the item gets
    * selected.
@@ -85,6 +91,7 @@ export class VerticalSegmentedControl<
         key={item.key}
         title={item.title}
         description={item.description}
+        expandText={item.expandText}
       />
     )
   }
