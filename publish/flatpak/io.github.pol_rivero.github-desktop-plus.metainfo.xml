@@ -45,9 +45,11 @@
   <screenshots>
     <screenshot type="default">
       <image>https://raw.githubusercontent.com/pol-rivero/github-desktop-plus/ad55a7eb97ae78b65cb3714db4ab7d29ca30d0d5/docs/assets/flathub/image1.png</image>
+      <caption>Search bar in commit history</caption>
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/pol-rivero/github-desktop-plus/ad55a7eb97ae78b65cb3714db4ab7d29ca30d0d5/docs/assets/flathub/image2.png</image>
+      <caption>Branch list with "unpushed branch" indicator</caption>
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.1" />
