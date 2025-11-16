@@ -47,7 +47,7 @@ import {
 import { ContinueRebase } from './continue-rebase'
 import { Octicon, OcticonSymbolVariant } from '../octicons'
 import * as octicons from '../octicons/octicons.generated'
-import { IStashEntry } from '../../models/stash-entry'
+import { entryToString, IStashEntry } from '../../models/stash-entry'
 import classNames from 'classnames'
 import { hasWritePermission } from '../../models/github-repository'
 import { hasConflictedFiles } from '../../lib/status'
@@ -73,6 +73,7 @@ import {
   applyFilters,
 } from './filter-changes-logic'
 import { ChangesListFilterOptions } from './changes-list-filter-options'
+import { generateStashListContextMenu } from '../stashing/stash-list-item-context-menu'
 
 export interface IChangesListItem extends IFilterListItem {
   readonly id: string
@@ -124,6 +125,7 @@ interface IFilterChangesListProps {
   readonly focusCommitMessage: boolean
   readonly isShowingModal: boolean
   readonly isShowingFoldout: boolean
+  readonly askForConfirmationOnDiscardStash: boolean
   readonly onDiscardChangesFromFiles: (
     files: ReadonlyArray<WorkingDirectoryFileChange>,
     isDiscardingAllChanges: boolean,
@@ -203,9 +205,12 @@ interface IFilterChangesListProps {
   /** The name of the currently selected external editor */
   readonly externalEditorLabel?: string
 
-  readonly stashEntry: IStashEntry | null
+  readonly stashEntries: ReadonlyArray<IStashEntry>
 
   readonly isShowingStashEntry: boolean
+
+  /** The currently selected/viewed stash entry (if viewing stash) */
+  readonly selectedStashEntry: IStashEntry | null
 
   /**
    * Whether we should show the onboarding tutorial nudge
@@ -558,7 +563,7 @@ export class FilterChangesList extends React.Component<
     }
 
     const hasLocalChanges = this.props.workingDirectory.files.length > 0
-    const hasStash = this.props.stashEntry !== null
+    const hasStash = this.props.stashEntries.length > 0
     const hasConflicts =
       this.props.conflictState !== null ||
       hasConflictedFiles(this.props.workingDirectory)
@@ -1109,22 +1114,52 @@ export class FilterChangesList extends React.Component<
     }
   }
 
-  private onStashEntryClicked = () => {
-    const { isShowingStashEntry, dispatcher, repository } = this.props
+  private onStashEntryClicked = (entry: IStashEntry) => {
+    const { isShowingStashEntry, selectedStashEntry, dispatcher, repository } =
+      this.props
 
-    if (isShowingStashEntry) {
+    // If we're viewing this specific stash entry, toggle back to working directory
+    if (
+      isShowingStashEntry &&
+      selectedStashEntry?.stashSha === entry.stashSha
+    ) {
       dispatcher.selectWorkingDirectoryFiles(repository)
-
       // If the button is clicked, that implies the stash was not restored or discarded
       dispatcher.incrementMetric('noActionTakenOnStashCount')
     } else {
-      dispatcher.selectStashedFile(repository)
+      // Otherwise, select this stash entry
+      dispatcher.selectStashedFile(repository, entry)
       dispatcher.incrementMetric('stashViewCount')
     }
   }
 
+  private onStashEntryClickedFn = (entry: IStashEntry) => {
+    return () => this.onStashEntryClicked(entry)
+  }
+
+  private onStashEntryContextMenu = (entry: IStashEntry) => {
+    const { dispatcher, repository } = this.props
+    const items = generateStashListContextMenu({
+      stashEntry: entry,
+      repository,
+      dispatcher,
+      askForConfirmationOnDiscardStash:
+        this.props.askForConfirmationOnDiscardStash,
+    })
+    showContextualMenu(items)
+  }
+
+  private onStashEntryContextMenuFn = (entry: IStashEntry) => {
+    return (event: React.MouseEvent) => {
+      event.preventDefault()
+      this.onStashEntryContextMenu(entry)
+    }
+  }
+
   private renderStashedChanges() {
-    if (this.props.stashEntry === null) {
+    const { stashEntries } = this.props
+
+    if (stashEntries.length === 0) {
       return null
     }
 
@@ -1133,20 +1168,61 @@ export class FilterChangesList extends React.Component<
       this.props.isShowingStashEntry ? 'selected' : null
     )
 
+    if (stashEntries.length === 1) {
+      const entry = stashEntries[0]
+      return (
+        <button
+          className={className}
+          onClick={this.onStashEntryClickedFn(entry)}
+          onContextMenu={this.onStashEntryContextMenuFn(entry)}
+          tabIndex={0}
+          aria-expanded={this.props.isShowingStashEntry}
+          aria-controls={
+            this.props.isShowingStashEntry ? StashDiffViewerId : undefined
+          }
+        >
+          <Octicon className="stack-icon" symbol={StashIcon} />
+          <div className="text">1 stash ({entryToString(entry)})</div>
+          <Octicon symbol={octicons.chevronRight} />
+        </button>
+      )
+    }
+
     return (
-      <button
-        className={className}
-        onClick={this.onStashEntryClicked}
-        tabIndex={0}
-        aria-expanded={this.props.isShowingStashEntry}
-        aria-controls={
-          this.props.isShowingStashEntry ? StashDiffViewerId : undefined
-        }
-      >
-        <Octicon className="stack-icon" symbol={StashIcon} />
-        <div className="text">Stashed Changes</div>
-        <Octicon symbol={octicons.chevronRight} />
-      </button>
+      <div className="stashed-changes-section">
+        <div className="stashed-changes-header">
+          <Octicon className="stack-icon" symbol={StashIcon} />
+          <div className="text">{stashEntries.length} stashes</div>
+        </div>
+        <div className="stashed-changes-list">
+          {stashEntries.map(entry => {
+            const isSelected =
+              this.props.isShowingStashEntry &&
+              this.props.selectedStashEntry !== null &&
+              this.props.selectedStashEntry.stashSha === entry.stashSha
+
+            const className = classNames(
+              'stashed-changes-button',
+              isSelected ? 'selected' : null
+            )
+
+            return (
+              <button
+                key={entry.stashSha}
+                className={className}
+                onClick={this.onStashEntryClickedFn(entry)}
+                onContextMenu={this.onStashEntryContextMenuFn(entry)}
+                tabIndex={0}
+                aria-expanded={isSelected}
+                aria-controls={isSelected ? StashDiffViewerId : undefined}
+              >
+                <div className="text">{entryToString(entry)}</div>
+                <Octicon symbol={octicons.chevronRight} />
+              </button>
+            )
+          })}
+        </div>
+      </div>
     )
   }
 

@@ -729,6 +729,9 @@ export type ChangesWorkingDirectorySelection = {
 export type ChangesStashSelection = {
   readonly kind: ChangesSelectionKind.Stash
 
+  /** The stash entry currently being viewed */
+  readonly selectedStashEntry: IStashEntry | null
+
   /** Currently selected file in the stash diff viewer UI (aka the file we want to show the diff for) */
   readonly selectedStashedFile: CommittedFileChange | null
 
@@ -769,10 +772,10 @@ export interface IChangesState {
   readonly conflictState: ConflictState | null
 
   /**
-   * The latest GitHub Desktop stash entry for the current branch, or `null`
-   * if no stash exists for the current branch.
+   * The GitHub Desktop stash entries for the current branch, or an empty array
+   * if no stashes exist for the current branch.
    */
-  readonly stashEntry: IStashEntry | null
+  readonly stashEntries: ReadonlyArray<IStashEntry>
 
   /**
    * The current selection state in the Changes view. Can be either

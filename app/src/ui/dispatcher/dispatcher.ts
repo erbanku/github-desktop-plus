@@ -321,17 +321,19 @@ export class Dispatcher {
 
   /**
    * Changes the selection in the changes view to the stash entry view and
-   * optionally selects a particular file from the current stash entry.
+   * optionally selects a particular file from a stash entry.
    *
+   *  @param stashEntry The stash entry to view (if undefined, uses most recent stash)
    *  @param file  A file to select when showing the stash entry.
    *               If undefined this method will preserve the previously selected
    *               file or pick the first changed file if no selection exists.
    */
   public selectStashedFile(
     repository: Repository,
+    stashEntry?: IStashEntry,
     file?: CommittedFileChange | null
   ): Promise<void> {
-    return this.appStore._selectStashedFile(repository, file)
+    return this.appStore._selectStashedFile(repository, stashEntry, file)
   }
 
   /**
@@ -2733,17 +2735,9 @@ export class Dispatcher {
    * override any stash that already exists for the current branch.
    *
    * @param repository
-   * @param showConfirmationDialog  Whether to show a confirmation dialog if an
-   *                                existing stash exists (defaults to true).
    */
-  public createStashForCurrentBranch(
-    repository: Repository,
-    showConfirmationDialog: boolean = true
-  ) {
-    return this.appStore._createStashForCurrentBranch(
-      repository,
-      showConfirmationDialog
-    )
+  public createStashForCurrentBranch(repository: Repository) {
+    return this.appStore._createStashForCurrentBranch(repository)
   }
 
   /** Drops the given stash in the given repository */

@@ -42,3 +42,22 @@ export type StashedFileChanges =
     }
 
 export type StashCallback = (stashEntry: IStashEntry) => Promise<void>
+
+export function entryToString(stashEntry: IStashEntry): string {
+  if (stashEntry.files.kind !== StashedChangesLoadStates.Loaded) {
+    return `${stashEntry.name} | Loading...`
+  }
+  if (stashEntry.files.files.length === 0) {
+    return `${stashEntry.name} | No changes`
+  }
+  const firstFileBaseName = baseName(stashEntry.files.files[0].path)
+  if (stashEntry.files.files.length === 1) {
+    return firstFileBaseName
+  }
+  return `${firstFileBaseName} + ${stashEntry.files.files.length - 1} more`
+}
+
+function baseName(filePath: string): string {
+  const separator = __WIN32__ ? '\\' : '/'
+  return filePath.split(separator).pop() || ''
+}

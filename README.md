@@ -1,12 +1,19 @@
 # GitHub Desktop Plus
 
-This is an up-to-date fork of [GitHub Desktop](https://desktop.github.com) for Linux with additional features and improvements.
+This is an **up-to-date** fork of [GitHub Desktop](https://desktop.github.com) for Linux with additional features and improvements.
 
 <img src="docs/assets/github-desktop-plus-demo.webp" alt="Demo" style="max-width:1000px;">
 
-![Search commits](docs/assets/github-desktop-plus-demo-search.webp)
+## Highlights
+| <h4>Commit history search</h4> | <h4>Multiple stashes per branch</h4> |
+| :---: | :---: |
+| ![Commit search](docs/assets/github-desktop-plus-demo-search.webp) | ![Multiple stashes](docs/assets/github-desktop-plus-demo-stashes.webp) |
+| <h4>Indicator for branches missing in the remote</h4> | <h4>Buttons optimized for visual recognition</h4> |
+| ![Push indicator](docs/assets/github-desktop-plus-demo-push-indicator.webp) | ![Stash header](docs/assets/github-desktop-plus-demo-stash-header.webp) |
+| <h4>Bitbucket integration</h4> | <h4>Indicator for merge commits</h4> |
+| ![Bitbucket integration](docs/assets/github-desktop-plus-demo-bitbucket-integration.webp) | ![Merge commits](docs/assets/github-desktop-plus-demo-merge-commits.webp) |
 
-## Extra Features 
+## Additional Features in GitHub Desktop Plus
 
 ### General:
 
@@ -22,12 +29,12 @@ This is an up-to-date fork of [GitHub Desktop](https://desktop.github.com) for L
 
 ### Repositories list:
 
-- **Pull all** button to fetch and pull from all remotes at once.
-- Allow **hiding** the '**Recent**' repositories section.
+- "**Pull all**" button to fetch and pull all your repositories at once.
+- Allow **hiding** the "**Recent**" repositories section.
 
 ### Branches list:
 
-- Add warning indicator to **local-only branches** (branches that are not on the remote).
+- Add warning indicator to **local-only branches** (branches that have not been pushed to the remote, or that have been deleted automatically after a PR).
 - Allow manually setting which is the **default branch** for a repository (even if it doesn't match the one configured in the remote).
 
 ### History tab:

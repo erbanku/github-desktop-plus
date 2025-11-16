@@ -69,6 +69,7 @@ interface IChangesSidebarProps {
   readonly accounts: ReadonlyArray<Account>
   readonly isShowingModal: boolean
   readonly isShowingFoldout: boolean
+  readonly askForConfirmationOnDiscardStash: boolean
   /** The name of the currently selected external editor */
   readonly externalEditorLabel?: string
 
@@ -443,6 +444,9 @@ export class ChangesSidebar extends React.Component<IChangesSidebarProps, {}> {
           focusCommitMessage={this.props.focusCommitMessage}
           isShowingModal={this.props.isShowingModal}
           isShowingFoldout={this.props.isShowingFoldout}
+          askForConfirmationOnDiscardStash={
+            this.props.askForConfirmationOnDiscardStash
+          }
           autocompletionProviders={this.autocompletionProviders!}
           availableWidth={this.props.availableWidth}
           onIgnoreFile={this.onIgnoreFile}
@@ -459,8 +463,13 @@ export class ChangesSidebar extends React.Component<IChangesSidebarProps, {}> {
           onOpenItemInExternalEditor={this.onOpenItemInExternalEditor}
           onChangesListScrolled={this.props.onChangesListScrolled}
           changesListScrollTop={this.props.changesListScrollTop}
-          stashEntry={this.props.changes.stashEntry}
+          stashEntries={this.props.changes.stashEntries}
           isShowingStashEntry={isShowingStashEntry}
+          selectedStashEntry={
+            selection.kind === ChangesSelectionKind.Stash
+              ? selection.selectedStashEntry
+              : null
+          }
           currentBranchProtected={currentBranchProtected}
           shouldNudgeToCommit={this.props.shouldNudgeToCommit}
           commitSpellcheckEnabled={this.props.commitSpellcheckEnabled}

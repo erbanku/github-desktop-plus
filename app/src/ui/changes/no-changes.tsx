@@ -428,16 +428,17 @@ export class NoChanges extends React.Component<
       return null
     }
 
-    const { stashEntry } = changesState
-    if (stashEntry === null) {
+    const { stashEntries } = changesState
+    if (stashEntries.length === 0) {
       return null
     }
 
-    if (stashEntry.files.kind !== StashedChangesLoadStates.Loaded) {
+    // TODO: Multiple stashes
+    if (stashEntries[0].files.kind !== StashedChangesLoadStates.Loaded) {
       return null
     }
 
-    const numChanges = stashEntry.files.files.length
+    const numChanges = stashEntries[0].files.files.length
     const description = (
       <>
         You have {numChanges} {numChanges === 1 ? 'change' : 'changes'} in

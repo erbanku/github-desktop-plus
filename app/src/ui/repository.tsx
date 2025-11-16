@@ -312,6 +312,9 @@ export class RepositoryView extends React.Component<
         accounts={this.props.accounts}
         isShowingModal={this.props.isShowingModal}
         isShowingFoldout={this.props.isShowingFoldout}
+        askForConfirmationOnDiscardStash={
+          this.props.askForConfirmationOnDiscardStash
+        }
         externalEditorLabel={this.props.externalEditorLabel}
         onOpenInExternalEditor={this.props.onOpenInExternalEditor}
         onChangesListScrolled={this.onChangesListScrolled}
@@ -492,11 +495,16 @@ export class RepositoryView extends React.Component<
 
   private renderStashedChangesContent(): JSX.Element | null {
     const { changesState } = this.props.state
-    const { selection, stashEntry } = changesState
+    const { selection } = changesState
 
-    if (selection.kind !== ChangesSelectionKind.Stash || stashEntry === null) {
+    if (
+      selection.kind !== ChangesSelectionKind.Stash ||
+      selection.selectedStashEntry === null
+    ) {
       return null
     }
+
+    const stashEntry = selection.selectedStashEntry
 
     if (stashEntry.files.kind === StashedChangesLoadStates.Loaded) {
       return (
