@@ -2078,14 +2078,8 @@ export class App extends React.Component<IAppProps, IAppState> {
         )
       }
       case PopupType.LocalChangesOverwritten:
-        const selectedState = this.state.selectedState
-
-        const existingStash =
-          selectedState !== null &&
-          selectedState.type === SelectionType.Repository
-            ? selectedState.state.changesState.stashEntries.length > 0
-            : false
-
+        // Now that we support multiple stashes, lie to the dialog so that it always shows the "stash changes" option.
+        const existingStash = false
         return (
           <LocalChangesOverwrittenDialog
             repository={popup.repository}
