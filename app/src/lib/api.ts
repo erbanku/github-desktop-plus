@@ -3662,7 +3662,7 @@ export function getGitLabAPIEndpoint(): string {
  * @returns The API endpoint URL (e.g., 'https://gitlab.example.com/api/v4')
  */
 export function getGitLabAPIURL(url: string): string {
-  const parsed = new URL(url)
+  const parsed = new window.URL(url)
   // Remove any existing /api/v4 path if present
   const cleanPath = parsed.pathname.replace(/\/api\/v4\/?$/, '')
   return `${parsed.origin}${cleanPath}/api/v4`
