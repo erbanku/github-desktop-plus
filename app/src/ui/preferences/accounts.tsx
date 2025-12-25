@@ -85,7 +85,11 @@ export class Accounts extends React.Component<IAccountsProps, {}> {
     return (
       <>
         {dotComAccounts.map(account => {
-          return this.renderAccount(account, SignInType.DotCom)
+          return (
+            <div key={`${account.endpoint}-${account.id}`}>
+              {this.renderAccount(account, SignInType.DotCom)}
+            </div>
+          )
         })}
         {dotComAccounts.length === 0 ? (
           this.renderSignIn(SignInType.DotCom)
@@ -116,13 +120,17 @@ export class Accounts extends React.Component<IAccountsProps, {}> {
     return (
       <>
         {enterpriseAccounts.map(account => {
-          return this.renderAccount(account, SignInType.Enterprise)
+          return (
+            <div key={`${account.endpoint}-${account.id}`}>
+              {this.renderAccount(account, SignInType.Enterprise)}
+            </div>
+          )
         })}
         {enterpriseAccounts.length === 0 ? (
           this.renderSignIn(SignInType.Enterprise)
         ) : (
           <Button onClick={this.props.onEnterpriseSignIn}>
-            Add GitHub Enteprise account
+            Add GitHub Enterprise account
           </Button>
         )}
       </>
@@ -137,7 +145,11 @@ export class Accounts extends React.Component<IAccountsProps, {}> {
     return (
       <>
         {gitlabAccounts.map(account => {
-          return this.renderAccount(account, SignInType.GitLab)
+          return (
+            <div key={`${account.endpoint}-${account.id}`}>
+              {this.renderAccount(account, SignInType.GitLab)}
+            </div>
+          )
         })}
         {gitlabAccounts.length === 0 ? (
           this.renderSignIn(SignInType.GitLab)

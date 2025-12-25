@@ -580,9 +580,12 @@ export class SignInStore extends TypedBaseStore<SignInState | null> {
       return
     }
 
-    // Detect if it's a GitLab instance by checking for common GitLab patterns
-    // or by testing if the URL contains 'gitlab' in the domain
-    const isGitLabUrl = validUrl.toLowerCase().includes('gitlab')
+    // Detect if it's a GitLab instance by checking if the hostname contains 'gitlab'
+    // or if the URL path includes '/api/v4' which is GitLab's API pattern
+    const parsedUrl = new window.URL(validUrl)
+    const isGitLabUrl =
+      parsedUrl.hostname.includes('gitlab') ||
+      parsedUrl.pathname.includes('/api/v4')
 
     const endpoint = isGitLabUrl
       ? getGitLabAPIURL(validUrl)
