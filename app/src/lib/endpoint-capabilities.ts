@@ -67,7 +67,11 @@ export const isBitbucket = (ep: string) => {
 }
 
 export const isGitLab = (ep: string) => {
-  return ep === getGitLabAPIEndpoint()
+  if (ep === getGitLabAPIEndpoint()) {
+    return true
+  }
+  // Check if endpoint ends with /api/v4, which is the GitLab API pattern
+  return ep.endsWith('/api/v4')
 }
 
 /** Whether or not the given endpoint URI is under the ghe.com domain */

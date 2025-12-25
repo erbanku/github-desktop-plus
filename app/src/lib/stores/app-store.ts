@@ -6511,8 +6511,11 @@ export class AppStore extends TypedBaseStore<IAppState> {
     return this.signInStore.beginBitbucketSignIn(resultCallback)
   }
 
-  public _beginGitLabSignIn(resultCallback?: (result: SignInResult) => void) {
-    return this.signInStore.beginGitLabSignIn(resultCallback)
+  public _beginGitLabSignIn(
+    endpoint?: string,
+    resultCallback?: (result: SignInResult) => void
+  ) {
+    return this.signInStore.beginGitLabSignIn(endpoint, resultCallback)
   }
 
   public _setSignInEndpoint(url: string): Promise<void> {

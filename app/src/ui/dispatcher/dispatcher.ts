@@ -1695,9 +1695,10 @@ export class Dispatcher {
   }
 
   public async showGitLabSignInDialog(
+    endpoint?: string,
     resultCallback?: (result: SignInResult) => void
   ): Promise<void> {
-    this.appStore._beginGitLabSignIn(resultCallback)
+    this.appStore._beginGitLabSignIn(endpoint, resultCallback)
     this.appStore._showPopup({ type: PopupType.SignIn })
   }
 

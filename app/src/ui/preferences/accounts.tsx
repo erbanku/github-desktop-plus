@@ -10,6 +10,7 @@ import { Avatar } from '../lib/avatar'
 import { CallToAction } from '../lib/call-to-action'
 import {
   enableMultipleEnterpriseAccounts,
+  enableMultipleDotComAccounts,
   enableBitbucketIntegration,
   enableGitLabIntegration,
 } from '../../lib/feature-flag'
@@ -35,16 +36,14 @@ enum SignInType {
 export class Accounts extends React.Component<IAccountsProps, {}> {
   public render() {
     const { accounts } = this.props
-    const dotComAccount = accounts.find(a => a.apiType === 'dotcom')
     const bitbucketAccount = accounts.find(a => a.apiType === 'bitbucket')
-    const gitlabAccount = accounts.find(a => a.apiType === 'gitlab')
 
     return (
       <DialogContent className="accounts-tab">
         <h2>GitHub.com</h2>
-        {dotComAccount
-          ? this.renderAccount(dotComAccount, SignInType.DotCom)
-          : this.renderSignIn(SignInType.DotCom)}
+        {enableMultipleDotComAccounts()
+          ? this.renderMultipleDotComAccounts()
+          : this.renderSingleDotComAccount()}
 
         <h2>GitHub Enterprise</h2>
         {enableMultipleEnterpriseAccounts()
@@ -63,12 +62,39 @@ export class Accounts extends React.Component<IAccountsProps, {}> {
         {enableGitLabIntegration() && (
           <>
             <h2>GitLab</h2>
-            {gitlabAccount
-              ? this.renderAccount(gitlabAccount, SignInType.GitLab)
-              : this.renderSignIn(SignInType.GitLab)}
+            {this.renderMultipleGitLabAccounts()}
           </>
         )}
       </DialogContent>
+    )
+  }
+
+  private renderSingleDotComAccount() {
+    const dotComAccount = this.props.accounts.find(a => a.apiType === 'dotcom')
+
+    return dotComAccount
+      ? this.renderAccount(dotComAccount, SignInType.DotCom)
+      : this.renderSignIn(SignInType.DotCom)
+  }
+
+  private renderMultipleDotComAccounts() {
+    const dotComAccounts = this.props.accounts.filter(
+      a => a.apiType === 'dotcom'
+    )
+
+    return (
+      <>
+        {dotComAccounts.map(account => {
+          return this.renderAccount(account, SignInType.DotCom)
+        })}
+        {dotComAccounts.length === 0 ? (
+          this.renderSignIn(SignInType.DotCom)
+        ) : (
+          <Button onClick={this.props.onDotComSignIn}>
+            Add GitHub.com account
+          </Button>
+        )}
+      </>
     )
   }
 
@@ -97,6 +123,25 @@ export class Accounts extends React.Component<IAccountsProps, {}> {
         ) : (
           <Button onClick={this.props.onEnterpriseSignIn}>
             Add GitHub Enteprise account
+          </Button>
+        )}
+      </>
+    )
+  }
+
+  private renderMultipleGitLabAccounts() {
+    const gitlabAccounts = this.props.accounts.filter(a => a.apiType === 'gitlab')
+
+    return (
+      <>
+        {gitlabAccounts.map(account => {
+          return this.renderAccount(account, SignInType.GitLab)
+        })}
+        {gitlabAccounts.length === 0 ? (
+          this.renderSignIn(SignInType.GitLab)
+        ) : (
+          <Button onClick={this.props.onGitLabSignIn}>
+            Add GitLab account
           </Button>
         )}
       </>
