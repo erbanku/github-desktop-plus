@@ -320,7 +320,9 @@ export class SignInStore extends TypedBaseStore<SignInState | null> {
         shell.openExternal(getBitbucketOAuthAuthorizationURL())
       } else if (oauthProvider === 'gitlab') {
         const redirectUri = getGitLabOAuthRedirectUri()
-        shell.openExternal(getGitLabOAuthAuthorizationURL(endpoint, redirectUri))
+        shell.openExternal(
+          getGitLabOAuthAuthorizationURL(endpoint, redirectUri)
+        )
       } else {
         shell.openExternal(getOAuthAuthorizationURL(endpoint, csrfToken))
       }

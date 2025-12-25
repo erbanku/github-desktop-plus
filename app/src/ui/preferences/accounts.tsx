@@ -130,7 +130,9 @@ export class Accounts extends React.Component<IAccountsProps, {}> {
   }
 
   private renderMultipleGitLabAccounts() {
-    const gitlabAccounts = this.props.accounts.filter(a => a.apiType === 'gitlab')
+    const gitlabAccounts = this.props.accounts.filter(
+      a => a.apiType === 'gitlab'
+    )
 
     return (
       <>
