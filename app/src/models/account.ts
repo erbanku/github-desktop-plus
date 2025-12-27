@@ -1,10 +1,10 @@
 import {
   getBitbucketAPIEndpoint,
   getDotComAPIEndpoint,
-  getGitLabAPIEndpoint,
   getHTMLURL,
   IAPIEmail,
 } from '../lib/api'
+import { isGitLab } from '../lib/endpoint-capabilities'
 
 /**
  * Returns a value indicating whether two account instances
@@ -145,7 +145,7 @@ export class Account {
       return 'dotcom'
     } else if (this.endpoint === getBitbucketAPIEndpoint()) {
       return 'bitbucket'
-    } else if (this.endpoint === getGitLabAPIEndpoint()) {
+    } else if (isGitLab(this.endpoint)) {
       return 'gitlab'
     } else {
       return 'enterprise'

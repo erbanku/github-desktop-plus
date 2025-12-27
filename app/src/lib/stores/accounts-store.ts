@@ -101,13 +101,20 @@ export class AccountsStore extends TypedBaseStore<ReadonlyArray<Account>> {
       return null
     }
 
-    const accountsByEndpoint = this.accounts.reduce(
-      (map, x) => map.set(x.endpoint, x),
-      new Map<string, Account>()
+    // Check if the account already exists (same endpoint and id)
+    const existingIndex = this.accounts.findIndex(
+      a => a.endpoint === account.endpoint && a.id === account.id
     )
-    accountsByEndpoint.set(account.endpoint, account)
 
-    this.accounts = sortAccounts([...accountsByEndpoint.values()])
+    if (existingIndex >= 0) {
+      // Replace the existing account
+      this.accounts = this.accounts.map((a, i) =>
+        i === existingIndex ? account : a
+      )
+    } else {
+      // Add the new account
+      this.accounts = sortAccounts([...this.accounts, account])
+    }
 
     this.save()
     return account

@@ -3655,6 +3655,19 @@ export function getGitLabAPIEndpoint(): string {
   return 'https://gitlab.com/api/v4'
 }
 
+/**
+ * Get the API endpoint URL for a GitLab instance.
+ *
+ * @param url The URL to the GitLab instance (e.g., 'https://gitlab.example.com')
+ * @returns The API endpoint URL (e.g., 'https://gitlab.example.com/api/v4')
+ */
+export function getGitLabAPIURL(url: string): string {
+  const parsed = new window.URL(url)
+  // Remove any existing /api/v4 path if present
+  const cleanPath = parsed.pathname.replace(/\/api\/v4\/?$/, '')
+  return `${parsed.origin}${cleanPath}/api/v4`
+}
+
 /** Get the account for the endpoint. */
 export function getAccountForEndpoint(
   accounts: ReadonlyArray<Account>,
@@ -3680,9 +3693,13 @@ export function getBitbucketOAuthAuthorizationURL(): string {
   return `https://bitbucket.org/site/oauth2/authorize?client_id=${ClientIDBitbucket}&response_type=code`
 }
 
-export function getGitLabOAuthAuthorizationURL(redirectUri: string): string {
+export function getGitLabOAuthAuthorizationURL(
+  endpoint: string,
+  redirectUri: string
+): string {
   const scope = encodeURIComponent('read_user read_api read_repository')
-  return `https://gitlab.com/oauth/authorize?client_id=${ClientIDGitLab}&redirect_uri=${encodeURIComponent(
+  const baseUrl = getHTMLURL(endpoint)
+  return `${baseUrl}/oauth/authorize?client_id=${ClientIDGitLab}&redirect_uri=${encodeURIComponent(
     redirectUri
   )}&response_type=code&scope=${scope}`
 }
@@ -3746,11 +3763,13 @@ export async function requestOAuthTokenBitbucket(
 }
 
 export async function requestOAuthTokenGitLab(
+  endpoint: string,
   code: string,
   redirectUri: string
 ): Promise<[string, string, number] | null> {
   try {
-    const response = await fetch('https://gitlab.com/oauth/token', {
+    const baseUrl = getHTMLURL(endpoint)
+    const response = await fetch(`${baseUrl}/oauth/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

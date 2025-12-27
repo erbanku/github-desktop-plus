@@ -17,6 +17,7 @@ import {
   getBitbucketOAuthAuthorizationURL,
   requestOAuthTokenBitbucket,
   getGitLabAPIEndpoint,
+  getGitLabAPIURL,
   getGitLabOAuthAuthorizationURL,
   getGitLabOAuthRedirectUri,
   requestOAuthTokenGitLab,
@@ -29,6 +30,8 @@ import { shell } from '../app-shell'
 import noop from 'lodash/noop'
 import { AccountsStore } from './accounts-store'
 import { RepoType } from '../../models/github-repository'
+import { enableMultipleDotComAccounts } from '../feature-flag'
+import { isGitLab } from '../endpoint-capabilities'
 
 /**
  * An enumeration of the possible steps that the sign in
@@ -244,7 +247,7 @@ export class SignInStore extends TypedBaseStore<SignInState | null> {
 
     const existingAccount = this.accounts.find(a => a.apiType === 'dotcom')
 
-    if (existingAccount) {
+    if (existingAccount && !enableMultipleDotComAccounts()) {
       this.setState({
         kind: SignInStep.ExistingAccountWarning,
         endpoint,
@@ -317,7 +320,9 @@ export class SignInStore extends TypedBaseStore<SignInState | null> {
         shell.openExternal(getBitbucketOAuthAuthorizationURL())
       } else if (oauthProvider === 'gitlab') {
         const redirectUri = getGitLabOAuthRedirectUri()
-        shell.openExternal(getGitLabOAuthAuthorizationURL(redirectUri))
+        shell.openExternal(
+          getGitLabOAuthAuthorizationURL(endpoint, redirectUri)
+        )
       } else {
         shell.openExternal(getOAuthAuthorizationURL(endpoint, csrfToken))
       }
@@ -353,7 +358,7 @@ export class SignInStore extends TypedBaseStore<SignInState | null> {
   private getOAuthProvider(endpoint: string): OAuthProvider {
     if (endpoint === getBitbucketAPIEndpoint()) {
       return 'bitbucket'
-    } else if (endpoint === getGitLabAPIEndpoint()) {
+    } else if (isGitLab(endpoint)) {
       return 'gitlab'
     } else {
       return 'github'
@@ -408,7 +413,11 @@ export class SignInStore extends TypedBaseStore<SignInState | null> {
       case 'bitbucket':
         return await requestOAuthTokenBitbucket(code)
       case 'gitlab':
-        return await requestOAuthTokenGitLab(code, getGitLabOAuthRedirectUri())
+        return await requestOAuthTokenGitLab(
+          endpoint,
+          code,
+          getGitLabOAuthRedirectUri()
+        )
       default:
         assertNever(oauthProvider, 'Unexpected oauth provider')
     }
@@ -461,13 +470,28 @@ export class SignInStore extends TypedBaseStore<SignInState | null> {
     }
   }
 
-  public beginGitLabSignIn(resultCallback?: (result: SignInResult) => void) {
+  public beginGitLabSignIn(
+    endpoint?: string,
+    resultCallback?: (result: SignInResult) => void
+  ) {
     if (this.state !== null) {
       this.reset()
     }
 
-    const endpoint = getGitLabAPIEndpoint()
-    const existingAccount = this.accounts.find(a => a.apiType === 'gitlab')
+    // If no endpoint provided, start with endpoint entry
+    if (!endpoint) {
+      this.setState({
+        kind: SignInStep.EndpointEntry,
+        error: null,
+        loading: false,
+        resultCallback: resultCallback ?? noop,
+      })
+      return
+    }
+
+    const existingAccount = this.accounts.find(
+      a => a.endpoint === endpoint && a.apiType === 'gitlab'
+    )
     if (existingAccount) {
       this.setState({
         kind: SignInStep.ExistingAccountWarning,
@@ -523,6 +547,18 @@ export class SignInStore extends TypedBaseStore<SignInState | null> {
       return
     }
 
+    /**
+     * If the user enters a gitlab.com url in the GitLab sign-in flow,
+     * redirect them to use the default GitLab endpoint.
+     */
+    if (/^(?:https:\/\/)?(?:www\.)?gitlab\.com($|\/)/.test(url)) {
+      this.beginGitLabSignIn(
+        getGitLabAPIEndpoint(),
+        currentState.resultCallback
+      )
+      return
+    }
+
     this.setState({ ...currentState, loading: true })
 
     let validUrl: string
@@ -532,11 +568,11 @@ export class SignInStore extends TypedBaseStore<SignInState | null> {
       let error = e
       if (e.name === InvalidURLErrorName) {
         error = new Error(
-          `The GitHub Enterprise instance address doesn't appear to be a valid URL. We're expecting something like https://github.example.com.`
+          `The instance address doesn't appear to be a valid URL. We're expecting something like https://gitlab.example.com or https://github.example.com.`
         )
       } else if (e.name === InvalidProtocolErrorName) {
         error = new Error(
-          'Unsupported protocol. Only https is supported when authenticating with GitHub Enterprise instances.'
+          'Unsupported protocol. Only https is supported when authenticating with self-hosted instances.'
         )
       }
 
@@ -544,7 +580,16 @@ export class SignInStore extends TypedBaseStore<SignInState | null> {
       return
     }
 
-    const endpoint = getEnterpriseAPIURL(validUrl)
+    // Detect if it's a GitLab instance by checking if the hostname contains 'gitlab'
+    // or if the URL path includes '/api/v4' which is GitLab's API pattern
+    const parsedUrl = new window.URL(validUrl)
+    const isGitLabUrl =
+      parsedUrl.hostname.includes('gitlab') ||
+      parsedUrl.pathname.includes('/api/v4')
+
+    const endpoint = isGitLabUrl
+      ? getGitLabAPIURL(validUrl)
+      : getEnterpriseAPIURL(validUrl)
 
     const existingAccount = this.accounts.find(x => x.endpoint === endpoint)
 
