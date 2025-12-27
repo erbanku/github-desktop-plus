@@ -18,8 +18,17 @@ import { OrderedWebRequest } from './ordered-webrequest'
 export function installExtensionBlockingFilter(
   orderedWebRequest: OrderedWebRequest
 ) {
-  orderedWebRequest.onBeforeRequest.addEventListener(async details => {
+  orderedWebRequest.onBeforeRequest.addEventListener(details => {
     const url = details.url
+
+    // Block all extension protocol requests
+    // These are always from browser extensions and should never be allowed
+    if (
+      url.startsWith('chrome-extension://') ||
+      url.startsWith('moz-extension://')
+    ) {
+      return { cancel: true }
+    }
 
     // Allow file:// and http(s):// from localhost (for dev mode)
     // This includes IPv4, IPv6, and both HTTP and HTTPS variants
@@ -35,17 +44,17 @@ export function installExtensionBlockingFilter(
       return {}
     }
 
-    // Block all extension protocol requests
-    if (
-      url.startsWith('chrome-extension://') ||
-      url.startsWith('moz-extension://')
-    ) {
-      return { cancel: true }
-    }
+    // Block extension bundle files from non-local origins
+    // These filenames are commonly used by browser extensions for content scripts
+    // Only block if they're coming from external sources (not our local files)
+    const isExtensionBundle =
+      url.includes('content.bundle.js') || url.includes('vendor.bundle.js')
+    const isExternalSource =
+      url.startsWith('http://') ||
+      url.startsWith('https://') ||
+      url.startsWith('data:')
 
-    // Block extension bundle files from other origins
-    // These are typical filenames used by browser extensions
-    if (url.includes('content.bundle.js') || url.includes('vendor.bundle.js')) {
+    if (isExtensionBundle && isExternalSource) {
       return { cancel: true }
     }
 
