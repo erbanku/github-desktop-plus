@@ -354,6 +354,23 @@ app.on('ready', () => {
   // repo assets
   const updateAccounts = installAuthenticatedImageFilter(orderedWebRequest)
 
+  // Block external browser extension content scripts from being loaded
+  // This prevents "Unable to initialize web-extension bridge" errors
+  session.defaultSession.webRequest.onBeforeRequest(
+    { urls: ['*://*/*content.bundle.js*', '*://*/*vendor.bundle.js*'] },
+    (details, callback) => {
+      // Block requests that look like browser extension bundles
+      if (
+        details.url.includes('content.bundle.js') ||
+        details.url.includes('vendor.bundle.js')
+      ) {
+        callback({ cancel: true })
+      } else {
+        callback({ cancel: false })
+      }
+    }
+  )
+
   Menu.setApplicationMenu(
     buildDefaultMenu({
       selectedShell: null,
