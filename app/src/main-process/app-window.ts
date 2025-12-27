@@ -73,6 +73,9 @@ export class AppWindow {
         nodeIntegration: true,
         spellcheck: true,
         contextIsolation: false,
+        // Disable webview tag to prevent browser extensions from injecting
+        // See https://www.electronjs.org/docs/latest/api/webview-tag
+        webviewTag: false,
       },
       acceptFirstMouse: true,
     }

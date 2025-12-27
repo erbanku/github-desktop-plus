@@ -36,6 +36,7 @@ import { OrderedWebRequest } from './ordered-webrequest'
 import { installAuthenticatedImageFilter } from './authenticated-image-filter'
 import { installAliveOriginFilter } from './alive-origin-filter'
 import { installSameOriginFilter } from './same-origin-filter'
+import { installExtensionBlockingFilter } from './extension-blocking-filter'
 import * as ipcMain from './ipc-main'
 import {
   getArchitecture,
@@ -353,6 +354,10 @@ app.on('ready', () => {
   // Adds an authorization header for requests of avatars on GHES and private
   // repo assets
   const updateAccounts = installAuthenticatedImageFilter(orderedWebRequest)
+
+  // Block external browser extension content scripts from being loaded
+  // This prevents "Unable to initialize web-extension bridge" errors
+  installExtensionBlockingFilter(orderedWebRequest)
 
   Menu.setApplicationMenu(
     buildDefaultMenu({
