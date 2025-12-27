@@ -1,6 +1,24 @@
 import { OrderedWebRequest } from './ordered-webrequest'
 
 /**
+ * Check if a URL is a localhost URL (for development mode)
+ *
+ * @param url The URL to check
+ * @returns true if the URL is localhost (IPv4, IPv6, HTTP/HTTPS)
+ */
+function isLocalhost(url: string): boolean {
+  return (
+    url.startsWith('file://') ||
+    url.startsWith('http://localhost') ||
+    url.startsWith('https://localhost') ||
+    url.startsWith('http://127.0.0.1') ||
+    url.startsWith('https://127.0.0.1') ||
+    url.startsWith('http://[::1]') ||
+    url.startsWith('https://[::1]')
+  )
+}
+
+/**
  * Installs a web request filter to block browser extension content scripts
  * from being injected into the Electron renderer process.
  *
@@ -18,7 +36,7 @@ import { OrderedWebRequest } from './ordered-webrequest'
 export function installExtensionBlockingFilter(
   orderedWebRequest: OrderedWebRequest
 ) {
-  orderedWebRequest.onBeforeRequest.addEventListener(details => {
+  orderedWebRequest.onBeforeRequest.addEventListener(async details => {
     const url = details.url
 
     // Block all extension protocol requests
@@ -32,15 +50,7 @@ export function installExtensionBlockingFilter(
 
     // Allow file:// and http(s):// from localhost (for dev mode)
     // This includes IPv4, IPv6, and both HTTP and HTTPS variants
-    if (
-      url.startsWith('file://') ||
-      url.startsWith('http://localhost') ||
-      url.startsWith('https://localhost') ||
-      url.startsWith('http://127.0.0.1') ||
-      url.startsWith('https://127.0.0.1') ||
-      url.startsWith('http://[::1]') ||
-      url.startsWith('https://[::1]')
-    ) {
+    if (isLocalhost(url)) {
       return {}
     }
 
@@ -52,12 +62,7 @@ export function installExtensionBlockingFilter(
       url.endsWith('content.bundle.js') || url.endsWith('vendor.bundle.js')
     const isExternalSource =
       (url.startsWith('http://') || url.startsWith('https://')) &&
-      !url.startsWith('http://localhost') &&
-      !url.startsWith('https://localhost') &&
-      !url.startsWith('http://127.0.0.1') &&
-      !url.startsWith('https://127.0.0.1') &&
-      !url.startsWith('http://[::1]') &&
-      !url.startsWith('https://[::1]')
+      !isLocalhost(url)
 
     if (isExtensionBundle && isExternalSource) {
       return { cancel: true }
