@@ -47,12 +47,17 @@ export function installExtensionBlockingFilter(
     // Block extension bundle files from non-local origins
     // These filenames are commonly used by browser extensions for content scripts
     // Only block if they're coming from external sources (not our local files)
+    // Use endsWith to avoid false positives from URLs containing these strings
     const isExtensionBundle =
-      url.includes('content.bundle.js') || url.includes('vendor.bundle.js')
+      url.endsWith('content.bundle.js') || url.endsWith('vendor.bundle.js')
     const isExternalSource =
-      url.startsWith('http://') ||
-      url.startsWith('https://') ||
-      url.startsWith('data:')
+      (url.startsWith('http://') || url.startsWith('https://')) &&
+      !url.startsWith('http://localhost') &&
+      !url.startsWith('https://localhost') &&
+      !url.startsWith('http://127.0.0.1') &&
+      !url.startsWith('https://127.0.0.1') &&
+      !url.startsWith('http://[::1]') &&
+      !url.startsWith('https://[::1]')
 
     if (isExtensionBundle && isExternalSource) {
       return { cancel: true }
