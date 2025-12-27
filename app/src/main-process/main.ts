@@ -36,6 +36,7 @@ import { OrderedWebRequest } from './ordered-webrequest'
 import { installAuthenticatedImageFilter } from './authenticated-image-filter'
 import { installAliveOriginFilter } from './alive-origin-filter'
 import { installSameOriginFilter } from './same-origin-filter'
+import { installExtensionBlockingFilter } from './extension-blocking-filter'
 import * as ipcMain from './ipc-main'
 import {
   getArchitecture,
@@ -356,46 +357,7 @@ app.on('ready', () => {
 
   // Block external browser extension content scripts from being loaded
   // This prevents "Unable to initialize web-extension bridge" errors
-  // Browser extensions typically use chrome-extension:// or moz-extension:// protocols
-  session.defaultSession.webRequest.onBeforeRequest(
-    {
-      urls: [
-        'chrome-extension://*/*',
-        'moz-extension://*/*',
-        '*://*/content.bundle.js',
-        '*://*/vendor.bundle.js',
-      ],
-    },
-    (details, callback) => {
-      // Allow file:// and http(s):// from localhost (for dev mode)
-      const url = details.url
-      if (
-        url.startsWith('file://') ||
-        url.startsWith('http://localhost') ||
-        url.startsWith('http://127.0.0.1')
-      ) {
-        callback({ cancel: false })
-        return
-      }
-
-      // Block all extension protocol requests
-      if (
-        url.startsWith('chrome-extension://') ||
-        url.startsWith('moz-extension://')
-      ) {
-        callback({ cancel: true })
-        return
-      }
-
-      // Block extension bundle files from other origins
-      if (url.includes('content.bundle.js') || url.includes('vendor.bundle.js')) {
-        callback({ cancel: true })
-        return
-      }
-
-      callback({ cancel: false })
-    }
-  )
+  installExtensionBlockingFilter(orderedWebRequest)
 
   Menu.setApplicationMenu(
     buildDefaultMenu({
