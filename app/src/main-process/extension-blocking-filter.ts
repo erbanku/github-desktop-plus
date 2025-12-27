@@ -48,9 +48,12 @@ export function installExtensionBlockingFilter(
       return { cancel: true }
     }
 
+    // Check if this is a localhost URL once and cache the result
+    const isLocalUrl = isLocalhost(url)
+
     // Allow file:// and http(s):// from localhost (for dev mode)
     // This includes IPv4, IPv6, and both HTTP and HTTPS variants
-    if (isLocalhost(url)) {
+    if (isLocalUrl) {
       return {}
     }
 
@@ -61,8 +64,7 @@ export function installExtensionBlockingFilter(
     const isExtensionBundle =
       url.endsWith('content.bundle.js') || url.endsWith('vendor.bundle.js')
     const isExternalSource =
-      (url.startsWith('http://') || url.startsWith('https://')) &&
-      !isLocalhost(url)
+      (url.startsWith('http://') || url.startsWith('https://')) && !isLocalUrl
 
     if (isExtensionBundle && isExternalSource) {
       return { cancel: true }
