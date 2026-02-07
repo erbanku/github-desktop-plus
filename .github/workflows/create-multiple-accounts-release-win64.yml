@@ -10,8 +10,9 @@ on:
 
 jobs:
   build-windows:
-    runs-on: windows-latest
+    runs-on: windows-2022
     name: Build Windows x64 Release
+    timeout-minutes: 60
     steps:
       - name: Checkout multiple-accounts branch
         uses: actions/checkout@v4
@@ -35,21 +36,24 @@ jobs:
         run: yarn build:prod
 
       - name: Package Windows x64
-        run: yarn package:win64
+        run: yarn package
+        env:
+          WINDOWS_CERT_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
+          WINDOWS_CERT: ${{ secrets.WINDOWS_CERT }}
 
       - name: Get current datetime
         id: datetime
-        run: echo "datetime=$(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_OUTPUT
-        shell: bash
+        run: echo "datetime=$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')" >> $env:GITHUB_OUTPUT
+        shell: pwsh
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ inputs.release_version }}-multi-accounts
-          release_name: GitHub Desktop Plus v${{ inputs.release_version }} (Multiple Accounts)
+          name: GitHub Desktop Plus v${{ inputs.release_version }} (Multiple Accounts)
           body: |
             ## GitHub Desktop Plus - Multiple Accounts Support
             
@@ -72,27 +76,9 @@ jobs:
             *Built from branch: multiple-accounts*
           draft: true
           prerelease: false
-
-      - name: Upload Windows x64 Installer
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/GitHub-Desktop-Plus-${{ inputs.release_version }}-win-x64.exe
-          asset_name: GitHub-Desktop-Plus-${{ inputs.release_version }}-multi-accounts-win-x64.exe
-          asset_content_type: application/octet-stream
-
-      - name: Upload Windows x64 MSI
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/GitHub-Desktop-Plus-${{ inputs.release_version }}-win-x64.msi
-          asset_name: GitHub-Desktop-Plus-${{ inputs.release_version }}-multi-accounts-win-x64.msi
-          asset_content_type: application/x-msi
-        continue-on-error: true
+          files: |
+            dist/*.exe
+            dist/*.msi
 
       - name: Publish Release
         if: success()
@@ -100,9 +86,18 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            github.rest.repos.updateRelease({
+            const releases = await github.rest.repos.listReleases({
               owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: ${{ steps.create_release.outputs.id }},
-              draft: false
-            })
+              repo: context.repo.repo
+            });
+            
+            const release = releases.data.find(r => r.tag_name === 'v${{ inputs.release_version }}-multi-accounts');
+            
+            if (release) {
+              await github.rest.repos.updateRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: release.id,
+                draft: false
+              });
+            }
